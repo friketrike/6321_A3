@@ -11,6 +11,7 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage{enumerate}
+\usepackage{amssymb}
 
 \lstset{language=Matlab}
 
@@ -157,21 +158,94 @@ by knowing the result of $T_2$.
 
 %------------------------------------------- Q 3 ----------------------------------------------------
 \section{Kernels}
+Suppose $k_1(\bm{x},\bm{z})$ and $k_2(\bm{x},\bm{z})$ are valid kernels over $\mathbb{R}^n x \mathbb{R}^n$. Prove or disprove that the following are valid kernels.
 
+Use Mercer's theorem regarding the kernel or Gram matrix or the fact that a kernel can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$.
+
+\subsection*{preliminaries}
+From Mercer, we know for each $k_1(\bm{x},\bm{z})$ and $k_2(\bm{x},\bm{z})$ we have corresponding kernel
+matrices $\bm{M}_1$ and $\bm{M}_2$ which are symmetric and positive semi-definite.
+
+For both $\bm{M}_1$ and $\bm{M}_2$:
+
+Symmetry:
+\begin{equation}\label{eq-symmetry}
+	\bm{M}_i = \bm{M}_i^T
+\end{equation}
+
+Positive semidefiniteness:
+\begin{equation}\label{eq-pos-1}
+	\bm{x}^T\bm{M}_i\bm{x} \geq 0
+\end{equation}
+
+\begin{equation}\label{eq-pos-2}
+	\left| \bm{M}_i \right| \geq 0
+\end{equation}
 %------------------------  a ------------------------%
-\subsection{}
+\subsection{$k(\bm{x},\bm{z}) = ak_1(\bm{x},\bm{z}) + bk_2(\bm{x},\bm{z}), a,b > 0; a,b \in \mathbb{R}$}
 
+Firstly, we establish that for any  valid kernel $k(\bm{x},\bm{z}), ak(\bm{x},\bm{z}) | a > 0; a \in \mathbb{R}$:
+We know that for a square matrix $\bm{A}$ of size $nxn$, $\left| a\bm{A} \right| = a^n \left | A \right|.$, and since $a^n \geq 0 \forall n \in \mathbb{N}, a > 0$ Then the property from equation \ref{eq-pos-2} holds for both of our summands. Additionally, since the scalar multiplication of a symmetric matrix yields another symmetric matrix, both summands are valid kernels.
+
+Now, let us say:
+\[ ak_1(\bm{x},\bm{z})  = k_1'(\bm{x},\bm{z}) \]
+and
+\[ bk_2(\bm{x},\bm{z})  = k_2'(\bm{x},\bm{z}) \]
+are both valid kernels with kernel matrices $\bm{M}_1'$ and $\bm{M}_2'$. The addition of two symmetric matrices yields a symmetric matrix, so we need to check for positive semi-definiteness.
+
+ Since both  $\bm{M}_1'$  and  $\bm{M}_2'$ are symmetric we can write:
+ 
+ \[  \bm{M}_1' =  \bm{U}^T\bm{U} \]
+  \[  \bm{M}_2'  =  \bm{V}^T\bm{V} \]
+  and using equation \ref{eq-pos-1}:
+\begin{equation*}
+	\begin{aligned}
+		(\bm{x}^T\bm{U}^T\bm{U}\bm{x} +& \bm{x}^T\bm{V}^T\bm{V}\bm{x}) \geq 0\\
+		\bm{x}^T(\bm{U}^T\bm{U} +& \bm{V}^T\bm{V})\bm{x} \geq 0\\
+		\bm{x}^T(\bm{M}_1' +& \bm{M}_2')\bm{x} \geq 0\\
+	\end{aligned}
+\end{equation*}
+Which proves that $k(\bm{x},\bm{z}) = ak_1(\bm{x},\bm{z}) + bk_2(\bm{x},\bm{z}), a,b > 0; a,b \in \mathbb{R}$ is a 
+valid kernel.
+  
 %------------------------  b ------------------------%
-\subsection{}
+\subsection{$k(\bm{x},\bm{z}) = ak_1(\bm{x},\bm{z}) - bk_2(\bm{x},\bm{z}), a,b > 0; a,b \in \mathbb{R}$}
+Suppose:
+\[a = 1, b = 1, 
+M_1 = 
+\begin{bmatrix}
+    1 & 1 \\
+    1 & 1  \\
+\end{bmatrix},
+M_2 = 
+\begin{bmatrix}
+    1 & 0 \\
+    0 & 1  \\
+\end{bmatrix},
+\] Both$\bm{M}_1$ and $\bm{M}_2$ symetric, positive semi-definite matrices. Yet $\bm{M}'= a\bm{M}_1 - b\bm{M}_2$ would yield:
+\[M_1 = 
+\begin{bmatrix}
+    0 & 1 \\
+    1 & 0  \\
+\end{bmatrix}
+\]
+The eigenvalues of which are $\lambda_1 = -1, \lambda_2 = 1$, making $\bm{M}'$ a non positive semi-definite matrix and thus $k(\bm{x}, \bm{z})$ is not a valid kernel.
 
 %------------------------  c ------------------------%
-\subsection{}
+\subsection{$k(\bm{x},\bm{z}) = k_1(\bm{x},\bm{z}) k_2(\bm{x},\bm{z})$}
+The kernel matrix $\bm{M}'$ of the product of two matrices $ k_1(\bm{x},\bm{z}), k_2(\bm{x},\bm{z})$ is equivalent to the element-wise multiplication of the respective two kernel matrices  $\bm{M}_1, \bm{M}_2$. This is also known as the Hadamard product or the Schur product. The Schur product theorem states that the Schur product of two positive semi-definite matrices is also positive semi-definite.
+It is trivial to show that symmetry is preserved under such conditions.
 
 %------------------------  d ------------------------%
-\subsection{}
+\subsection{$k(\bm{x},\bm{z}) = f(\bm{x})f(\bm{z}), where$ $f: \mathbb{R}^n \rightarrow \mathbb{R}$}\label{functions}
+Here we rely on the fact that a kernel can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$ where $\phi(\bm{x})$ maps
+$\bm{x}$ onto an n-dimensional space.
+
+It is trivial to see that if $n=1$ and $\phi = f$, $f(\bm{x})f(\bm{z})$ constitutes a valid kernel.
 
 %------------------------  e ------------------------%
-\subsection{}
+\subsection{$k(\bm{x},\bm{z}) = f(\bm{x})f(\bm{z}), where $ $p$ $pdf$.}
+The same rationale as question \ref{functions} applies here.
 
 %------------------------------------------ Q 4 ----------------------------------------------------
 \section{Nearest neighbour vs decision trees}
@@ -186,8 +260,6 @@ by knowing the result of $T_2$.
 %------------------------  b ------------------------%
 \subsection{}
 
-%------------------------  c ------------------------%
-\subsection{}
 
 %------------------------------------------ Q 6 ----------------------------------------------------
 \section{Implementation}
