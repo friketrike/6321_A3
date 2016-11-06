@@ -255,7 +255,22 @@ The same rationale as question \ref{functions} applies here.
 \section{Bayes rate}
 
 %------------------------  a ------------------------%
-\subsection{}
+\subsection{Show that $P^* = r$ for the following univariate case}
+Where $P(\omega_i)=\frac{1}{c}$
+
+and
+\[ 
+	P(x|\omega_i) = 
+	\begin{cases}
+		1 & \quad 0\leq x \leq \frac{cr}{c-1}\\
+		1 & \quad i \leq x \leq i + 1 - \frac{cr}{c-1}\\
+		0 & \quad otherwise
+	\end{cases}
+\] 
+
+Firstly, we observe that there is a single overlap region $[0, \frac{cr}{c-1}]$. Since for each class $i$, density is 1 only in $[i, i+1-\frac{cr}{c-1}]$ where 
+
+
 
 %------------------------  b ------------------------%
 \subsection{}
