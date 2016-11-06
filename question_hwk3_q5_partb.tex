@@ -1,0 +1,55 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\[
+	\begin{aligned}
+		LNN =& \int\left[ 1 - \sum_{i=1}^{c}P^2(\omega_i | x)\right]p(x)dx \\
+		       =& \int\left[ 1 - \sum_{i=1}^{c}
+		       		\left(\frac{P(x | \omega_i )P(\omega_i)}{p(x)}\right)^2
+		       	\right]p(x)dx \\	
+		       =& \int p(x) - \sum_{i=1}^{c}
+		       		\frac{P(x | \omega_i )^2P(\omega_i)^2}{p(x)}dx \\ %
+		       =& \int p(x)dx - 
+		     	 \int\sum_{i=1}^{c} \frac{P(x | \omega_i )^2P(\omega_i)^2}{p(x)}dx \\ 
+		      =& 1 -  \int\sum_{i=1}^{c}\frac{P(x | \omega_i )^2P(\omega_i)^2}{p(x)}dx \\ 
+		      =& 1 -  \int\limits_0^{\frac{cr}{c-1}}\frac{1}{p(x)c^2}dx 
+		      	  - \sum_{i=1}^{c}\int\limits_i^{i+1-\frac{cr}{c-1}}\frac{1}{p(x)c^2}dx \\ 
+		      =& 1 - \frac{cr}{p(x)c^2(c-1)} - \frac{c(c-1) - c^2r}{p(x)c^2(c-1)}\\
+		      =& 1 - \frac{r- c+1 + cr}{p(x)c(c-1)}\\
+		      =& 1 - \frac{(1 - r) (c-1)}{p(x)c(c-1)}\\
+		      =& 1 - \frac{(1 - r)}{p(x)c}\\		      
+	\end{aligned}
+\]
+
+Where if we think that:
+\[ \int p(x)dx  = 1 \]
+And more precisely, given $P(x | \omega_i)$ as stated in the question, we constrain $\int p(x)$ to the support of the density:
+\[ \int\limits_0^{\frac{cr}{c-1}} p(x)dx + \sum_{i=1}^{c}\int\limits_i^{i+1-\frac{cr}{c-1}} p(x)dx  = 1 \] \clearpage
+It would be tempting to say that if p(x) is constant (yet I'm not sure of this assumption):
+\[
+	\begin{aligned}
+		p(x) \bigg|_{0}^{\frac{cr}{c-1}} +  \sum\limits_{i=1}^{c} p(x) \bigg|_{i}^{i+1-\frac{cr}{c-1}} = 1 \\
+		p(x)\left(\frac{cr}{c-1} + \sum_{i=1}^{c}\left[1 - \frac{cr}{c-1}\right] \right) = 1\\
+		p(x)\left(\frac{cr+c(c-1)-c^2r}{c-1}\right) = 1\\
+		p(x)c(1-r) = 1\\
+	\end{aligned}		
+\]
+And therefore:
+\[ p(x) = \frac{1}{c(1-r)}\]
+But if we plug this above, we get:
+\[ 
+	\begin{aligned}
+		LNN =& 1 - \frac{(1 - r)}{\frac{c}{c-cr}}\\
+		LNN =& 1 - \frac{(1 - r)}{\frac{1}{1-r}}\\
+		LNN =& 1 - (1 - r)^2\\
+		LNN =& 1 - (1 - 2r + r^2)\\
+		LNN =& 2r - r^2\\
+	\end{aligned}
+\]
+However, if for some reason integrating the $\frac{1}{p(x)}$ part were to yield $\frac{1}{c}$, then we would have:
+\[ LNN = 1 - (1 - r) = r\]
+Could you please give me any pointers or hints as to what I'm doing wrong?
+\end{document}
