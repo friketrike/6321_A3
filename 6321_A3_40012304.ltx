@@ -4,6 +4,7 @@
 
 \usepackage{titlesec}
 \usepackage{graphicx}
+\usepackage{subfig}
 \usepackage{epstopdf} 
 \usepackage{caption}
 \usepackage{amsmath}
@@ -48,6 +49,8 @@ Propose an adequate learning algorithm for each instance.
 
 %------------------------------------- b ------------------------------------------ %
 \subsection{Clasifier for children in special-ed, justified to the board before it's implemented.}
+One of the easiest classification algorithms to explain in layman's terms is decision trees; 
+since the method should be justified to the board, this would probably be an adequate choice.
 
 %------------------------------------- c ------------------------------------------ %
 \subsection{Binary classification of 1 million bits (empirical preference rate for others), very large data-set. Frequent updates.}
@@ -249,10 +252,23 @@ The same rationale as question \ref{functions} applies here.
 
 %------------------------------------------ Q 4 ----------------------------------------------------
 \section{Nearest neighbour vs decision trees, do boundaries coincide?}
-Boundaries do not necessarily coincide for these two classification strategies. Boundaries for trees are composed of hyper-planes
-that are orthogonal to the feature(s) chosen for the separation and pass through the midpoint between neighboring points along the axis of the chosen feature(s); so their boundaries can have one direction out of a set number of directions for a given space. Conversely, boundaries for nearest-neibours correspond to a Voronoi tessellation, where the space is populated with hyper-planes running orthogonal to lines uniting nearest neighbors (thus said hyperplanes can have an arbitrary direction) and passing through the midpoint between neighbours along this axis.
+Boundaries do not necessarily coincide for these two classification strategies. In the case of trees, boundaries are composed of hyper-planes
+that are orthogonal to the features chosen for the separation and pass through the midpoint between neighboring points along the axis of the chosen features\footnote{A combination of features can also be used, but as a crude example, if both features are chosen in a 2-d space, boundaries would yield diagonal lines.}. Thus each segment of a decision-tree boundary can have one out of d directions for a d-dimensional space\footnote{Again, a combination of features may be used but the amount of directions to choose from is still rather limited.}. 
 
-To illustrate: Suppose an
+Conversely, boundaries for nearest-neibours correspond to a Voronoi tessellation, where the each boundary segment corresponds to a hyper-plane running orthogonal to the line between the boundary's nearest neighbors and passing through the midpoint of such a line (thus said hyperplanes can have an any direction in the space).
+
+For an example, see figures \ref{fig:voronoi} and \ref{fig:tree}.
+
+\begin{figure}[H]
+\begin{center}
+	\subfloat[Nearest-neighbour]{
+	\includegraphics[width=2.1in, trim=1.3in 3.3in 1.2in 3.3in]{Voronoi}\label{fig:voronoi}}
+	\hfill
+	\subfloat[decision tree]{
+	\includegraphics[clip, width=2in, trim=3in 3in 3in 1.4in]{decision-tree}\label{fig:tree}}
+\caption{A Voronoi tessellation has boundary segments in many different directions, perpendicular to the lines between any two nearest-neighbors whereas decision-tree boundary segments are perpendicular to any one of a given set of features or feature combinations}%      
+\end{center}
+\end{figure}
 
 
 %------------------------------------------ Q 5 ----------------------------------------------------
@@ -278,30 +294,21 @@ The minimal multi-class classification error rate $P^*$ is given by:
 \[
 		P^* = 1-\int \arg\max\limits_i P(\omega_i)P(x|\omega_i)dx
 \]
-And given the class density and probability, we can see that for any region with overlapping densities, the choice of any i will maximize. Thus:
+And given the class density and probability, we can see that for any region with overlapping densities, the choice of any i will maximize. Additionally, we see that the constraints imposed by existing densities demand that $0 \leq r \leq \frac{c-1}{c}$. This in turn implies that densities overlap only in $[0, \frac{cr}{c-1}]$ Thus:
 \[
 	\begin{aligned}
 		P^* =& 1-\int P(\omega_1)P(x|\omega_1)dx\\
 		         =& 1 - \frac{1}{c}\int_0^{\frac{cr}{c-1}}dx - \sum_{i=1}^{c}
 		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}dx \\ %
-		        =& 1 - \left( \frac{r}{c-1} + 1 - \frac{cr}{c-1} \right)\\
-		        =& 1 - \left(\frac{r+(c-1) - cr}{c-1}\right)\\
-		        =& 1 - \left(\frac{r(c-1) - (c-1)}{c-1}\right)\\
-		        =& 1 + r - 1\\
-		        =& r
+		        =& 1 - \frac{1}{c}\frac{cr}{c-1} - 1-\frac{cr}{c-1} \\ %  		
+		      =& \frac{cr - r}{c-1}\\ %  
+		      =& r
 	\end{aligned}	
 \]
-If, however, $r < 0, |r| < \frac{c-1}{c} $, there are c-1 density overlaps. Thus we would need to develop otherwise:
-\[
-	\begin{aligned}
-		P^* =& 1-\int P(\omega_1)P(x|\omega_1)dx\\
-		        =& \sum\limits_{i=1}^{c-1}\frac{1}{c}\int_{i+1}^{i+1+\frac{c|r|}{c-1}}dx\\
-		        =& (\frac{c-1}{c}\frac{|r|}{c-1})\\
-		        =& |r|
-	\end{aligned}	
-\]
+
 %------------------------  b ------------------------%
 \subsection{Show the nearest-neighbor rate $P = P^*$}
+
 \[
 	\begin{aligned}
 		LNN =& \int\left[ 1 - \sum_{i=1}^{c}P^2(\omega_i | x)\right]p(x)dx \\
@@ -318,7 +325,7 @@ If, however, $r < 0, |r| < \frac{c-1}{c} $, there are c-1 density overlaps. Thus
 		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}dx \\ %   
 		      =& 1 - \frac{1}{c}\frac{cr}{c-1} - 1-\frac{cr}{c-1} \\ %  		
 		      =& \frac{cr - r}{c-1}\\ %  
-		      =& r\\
+		      =& r
 	\end{aligned}
 \]
 
