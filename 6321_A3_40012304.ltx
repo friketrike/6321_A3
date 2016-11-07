@@ -248,16 +248,17 @@ It is trivial to see that if $n=1$ and $\phi = f$, $f(\bm{x})f(\bm{z})$ constitu
 The same rationale as question \ref{functions} applies here.
 
 %------------------------------------------ Q 4 ----------------------------------------------------
-\section{Nearest neighbour vs decision trees}
+\section{Nearest neighbour vs decision trees, do boundaries coincide?}
+Boundaries do not necessarily coincide for these two classification strategies. Boundaries for trees are composed of hyper-planes
+that are orthogonal to the feature(s) chosen for the separation and pass through the midpoint between neighboring points along the axis of the chosen feature(s); so their boundaries can have one direction out of a set number of directions for a given space. Conversely, boundaries for nearest-neibours correspond to a Voronoi tessellation, where the space is populated with hyper-planes running orthogonal to lines uniting nearest neighbors (thus said hyperplanes can have an arbitrary direction) and passing through the midpoint between neighbours along this axis.
+
+To illustrate: Suppose an
 
 
 %------------------------------------------ Q 5 ----------------------------------------------------
 \section{Bayes rate}
-
-%------------------------  a ------------------------%
-\subsection{Show that $P^* = r$ for the following univariate case}
-Where $P(\omega_i)=\frac{1}{c}$
-
+For the following univariate case
+where $P(\omega_i)=\frac{1}{c}$
 and
 \[ 
 	P(x|\omega_i) = 
@@ -267,13 +268,59 @@ and
 		0 & \quad otherwise
 	\end{cases}
 \] 
+%------------------------  a ------------------------%
+\subsection{Show that $P^* = r$ }
 
-Firstly, we observe that there is a single overlap region $[0, \frac{cr}{c-1}]$. Since for each class $i$, density is 1 only in $[i, i+1-\frac{cr}{c-1}]$ where 
+% Firstly, we observe that there is a single overlap region $[0, \frac{cr}{c-1}]$. Since for each class $i$, density is 1 only in $[i, i+1-\frac{cr}{c-1}]$ where 
 
+The minimal multi-class classification error rate $P^*$ is given by:
 
-
+\[
+		P^* = 1-\int \arg\max\limits_i P(\omega_i)P(x|\omega_i)dx
+\]
+And given the class density and probability, we can see that for any region with overlapping densities, the choice of any i will maximize. Thus:
+\[
+	\begin{aligned}
+		P^* =& 1-\int P(\omega_1)P(x|\omega_1)dx\\
+		         =& 1 - \frac{1}{c}\int_0^{\frac{cr}{c-1}}dx - \sum_{i=1}^{c}
+		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}dx \\ %
+		        =& 1 - \left( \frac{r}{c-1} + 1 - \frac{cr}{c-1} \right)\\
+		        =& 1 - \left(\frac{r+(c-1) - cr}{c-1}\right)\\
+		        =& 1 - \left(\frac{r(c-1) - (c-1)}{c-1}\right)\\
+		        =& 1 + r - 1\\
+		        =& r
+	\end{aligned}	
+\]
+If, however, $r < 0, |r| < \frac{c-1}{c} $, there are c-1 density overlaps. Thus we would need to develop otherwise:
+\[
+	\begin{aligned}
+		P^* =& 1-\int P(\omega_1)P(x|\omega_1)dx\\
+		        =& \sum\limits_{i=1}^{c-1}\frac{1}{c}\int_{i+1}^{i+1+\frac{c|r|}{c-1}}dx\\
+		        =& (\frac{c-1}{c}\frac{|r|}{c-1})\\
+		        =& |r|
+	\end{aligned}	
+\]
 %------------------------  b ------------------------%
-\subsection{}
+\subsection{Show the nearest-neighbor rate $P = P^*$}
+\[
+	\begin{aligned}
+		LNN =& \int\left[ 1 - \sum_{i=1}^{c}P^2(\omega_i | x)\right]p(x)dx \\
+		       =& \int\left[ 1 - \sum_{i=1}^{c}
+		       		\left(\frac{P(x | \omega_i )P(\omega_i)}{p(x)}\right)^2
+		       	\right]p(x)dx \\	
+		       =& \int p(x) - \sum_{i=1}^{c}
+		       		\frac{P(x | \omega_i )^2P(\omega_i)^2}{p(x)}dx \\ %
+		      =& \int p(x) - \sum_{i=1}^{c}
+		       		\frac{P(x | \omega_i )P(\omega_i)(P(x | \omega_i )P(\omega_i))}{p(x)}dx \\ %   
+		      =& \int p(x) - \sum_{i=1}^{c}
+		       		\frac{P(x | \omega_i )P(\omega_i)p(x)}{p(x)}dx \\ % 		       		
+		      =& \int p(x)dx - \frac{1}{c}\int_0^{\frac{cr}{c-1}}dx - \sum_{i=1}^{c}
+		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}dx \\ %   
+		      =& 1 - \frac{1}{c}\frac{cr}{c-1} - 1-\frac{cr}{c-1} \\ %  		
+		      =& \frac{cr - r}{c-1}\\ %  
+		      =& r\\
+	\end{aligned}
+\]
 
 
 %------------------------------------------ Q 6 ----------------------------------------------------
