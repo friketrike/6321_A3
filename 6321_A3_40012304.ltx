@@ -5,16 +5,18 @@
 \usepackage{titlesec}
 \usepackage{graphicx}
 \usepackage{subfig}
-\usepackage{epstopdf} 
+%\usepackage{epstopdf} 
 \usepackage{caption}
 \usepackage{amsmath}
 \usepackage{bm}
-\usepackage{listings}
+%\usepackage{listings}
 \usepackage{float}
 \usepackage{enumerate}
 \usepackage{amssymb}
 
-\lstset{language=Matlab}
+%\lstset{language=Matlab}
+
+\newcommand{\Lagr}{\mathcal{L}}
 
 \usepackage{stackengine}
 \def\delequal{\mathrel{\ensurestackMath{\stackon[1pt]{=}{\scriptstyle\Delta}}}}
@@ -65,24 +67,27 @@ since the method should be justified to the board, this would probably be an ade
 \subsection{Compute the following for $(X,Y)$:\\
 ${p(0,0) = 1/3, p(0,1) = 1/3, p(1,0)=0, p(1,1)=1/3}$. }
 \begin{enumerate}[i]
-    \item $H[x]$ $=
+    \item $H[x]$   $=
+        - \sum_x p(x) log_2(p(x)) = 
         - \frac{1}{3}log_2\left( \frac{1}{3} \right)
         - \frac{2}{3}log_2\left( \frac{2}{3} \right) 
         = .9182$
-    \item $H[y]$ $=
+    \item $H[y]$   $=
+        - \sum_y p(y) log_2(p(y)) = 
         - \frac{1}{3}log_2\left( \frac{1}{3} \right)
         - \frac{2}{3}log_2\left( \frac{2}{3} \right) 
         = .9182$
-    \item $H[y|x]$ $= \sum_x p(x)H[Y|X=x] 
-        = \frac{2}{3}\left(-\frac{1}{2}log_2\left(\frac{1}{2}\right) 
-        -\frac{1}{2}log_2\left(\frac{1}{2}\right)\right) 
+    \item $H[y|x]$ $=
+    	 -\sum_x p(x)H[Y|X=x] 
+        = -\frac{2}{3}\left(\frac{1}{2}log_2\left(\frac{1}{2}\right) 
+        +\frac{1}{2}log_2\left(\frac{1}{2}\right)\right) 
         = \frac{2}{3}$
-    \item $H[x|y]$ $= \sum_y p(x)H[X|Y=y] 
-        = \frac{2}{3}\left(-\frac{1}{2}log_2\left(\frac{1}{2}\right) 
-        -\frac{1}{2}log_2\left(\frac{1}{2}\right)\right) 
+    \item $H[x|y]$ $= -\sum_y p(x)H[X|Y=y] 
+        = -\frac{2}{3}\left(\frac{1}{2}log_2\left(\frac{1}{2}\right) 
+        +\frac{1}{2}log_2\left(\frac{1}{2}\right)\right) 
         = \frac{2}{3}$
-    \item $H[x,y]$ $= 3\left( -\frac{1}{3}log_2\left(\frac{1}{3}\right)\right) 
-        = -log_2\left(\frac{1}{3}\right) 
+    \item $H[x,y]$ $=- \sum_x \sum_y p(x,y) log_2(p(x,y))
+        = 3\left( -\frac{1}{3}log_2\left(\frac{1}{3}\right)\right) 
         = 1.5849$
     \item $I[x,y]$ $ = \sum_x \sum_y p(x,y) log_2\left( \frac{p(x,y)}{p(x)p(y)}\right)
         = H[x] - H[x|y] = 0.2516 $
@@ -92,35 +97,46 @@ ${p(0,0) = 1/3, p(0,1) = 1/3, p(1,0)=0, p(1,1)=1/3}$. }
 We wish to find:
 \[\arg \max_{p_n} \sum\limits_{n=1}^N p_n log(p_n) \]
 With constraints:
-\[1 - \sum\limits_{n=1}^N p_n = 0\]
-We use a Lagrangian multiplier such that:
-\[ \nabla_{p_1,p_2, \ldots p_N} \sum\limits_{n=1}^N p_n log(p_n) 
-    = \nabla_{p_1,p_2 \ldots p_N} \lambda (1 - \sum\limits_{n=1}^N p_n) \]
+\[
+1 - \sum\limits_{n=1}^N p_n = 0\\
+p_i \geq 0 \mbox{,} \forall i \in \{1,2,\ldots, N  \}
+\]
+We use Lagrange for maximization with constraints with a lagrangian multiplier only for the forst constraint\footnote{The second constraint should be satisfied by the following solution}:
+\[
+\Lagr(p_1, p_2, \ldots, p_n, \lambda) = \sum\limits_{n=1}^N p_n log(p_n) - \lambda (1 - \sum\limits_{n=1}^N p_n)
+\]
+And by setting the gradient of the Lagrangian function to 0
+\[ \nabla_{p_1,p_2, \ldots p_N, \lambda}\Lagr(p_1, p_2, \ldots, p_n, \lambda = 0\]
 We are thus left with a system:
 \begin{equation*}
     \begin{aligned}
-        \frac{\partial}{\partial_{p_1}} \sum\limits_{n=1}^N p_n log(p_n) 
-        =& \frac{\partial}{\partial_{p_1}} \lambda (1 - \sum\limits_{n=1}^N p_n) \\
-        \frac{\partial}{\partial_{p_2}} \sum\limits_{n=1}^N p_n log(p_n) 
-        =& \frac{\partial}{\partial_{p_2}} \lambda (1 - \sum\limits_{n=1}^N p_n) \\
+        \frac{\partial_\Lagr}{\partial_{p_1}} \sum\limits_{n=1}^N p_n log(p_n) 
+        -& \lambda (1 - \sum\limits_{n=1}^N p_n) = 0\\
+        \frac{\partial_\Lagr}{\partial_{p_2}} \sum\limits_{n=1}^N p_n log(p_n) 
+        -& \lambda (1 - \sum\limits_{n=1}^N p_n) = 0\\
         \vdots & \\
-        \frac{\partial}{\partial_{p_N}} \sum\limits_{n=1}^N p_n log(p_n) 
-        =& \frac{\partial}{\partial_{p_N}} \lambda (1 - \sum\limits_{n=1}^N p_n) \\
-        1 - \sum\limits_{n=1}^N p_n =& 0
+        \frac{\partial_\Lagr}{\partial_{p_N}} \sum\limits_{n=1}^N p_n log(p_n) 
+        -& \lambda (1 - \sum\limits_{n=1}^N p_n) = 0\\
+        \frac{\partial_\Lagr}{\partial_{\lambda}}\lambda(1 -& \sum\limits_{n=1}^N p_n) = 0
     \end{aligned}
 \end{equation*}
 Which in turn yields:
-\begin{equation*}
+{\begin{equation*}
     \begin{aligned}
-        log(p_1) + 1 =& \lambda p_1 \\
-        log(p_2) + 1 =& \lambda p_2 \\
+        log(p_1) + 1 -& \lambda p_1 = 0\\
+        log(p_2) + 1 -& \lambda p_2 = 0\\
         \vdots & \\
-        log(p_N) + 1 =& \lambda p_N \\
-        1 - \sum\limits_{n=1}^N p_n =& 0
+        log(p_N) + 1 -& \lambda p_N = 0
     \end{aligned}
-\end{equation*}
-From which it is clear that $p_1 = p_2 = \ldots p_N = \frac{1}{N}$, which is precisely a 
-discrete uniform distribution.
+\end{equation*} 
+\begin{equation} \label{eq:constraint}
+        1 - \sum\limits_{n=1}^N p_n = 0
+\end{equation}} % avoid page break in final version
+From which:
+\begin{equation} \label{eq:uniform}
+\lambda = \frac{\log(p_1)+1}{p_1} = \frac{\log(p_2)+1}{p_2} = \ldots \frac{\log(p_N)+1}{p_N}\\
+\end{equation}
+ it is clear from equations \ref{eq:constraint} and \ref{eq:uniform} that $p_1 = p_2 = \ldots p_N = \frac{1}{N}$, which is precisely a discrete uniform distribution.
 
 %------------------------  c ------------------------%
 \subsection{Show that $T_1$ wins}
@@ -128,7 +144,7 @@ The notes show two possible tests for a decision tree. T1, where the left child 
 posible outcomes in its sub-trees and the right node has $[10+, 0-]$. T2, on the other hand, yields:
 $left = [15+,7-]; right = [15+,3-]$.
 
-The best choice should yield the maximum information gain $I[p,T_n]\mbox{,} n \in \{1,2\}$. So for $T_1$:
+The best choice should yield the maximum mutual information or information gain $I[p,T_n]\mbox{,} n \in \{1,2\}$. So for $T_1$:
 
 \begin{equation*}
     \begin{aligned}
@@ -161,10 +177,11 @@ by knowing the result of $T_2$.
 
 %------------------------------------------- Q 3 ----------------------------------------------------
 \section{Kernels}
-Suppose $k_1(\bm{x},\bm{z})$ and $k_2(\bm{x},\bm{z})$ are valid kernels over $\mathbb{R}^n x \mathbb{R}^n$. Prove or disprove that the following are valid kernels.
+Suppose $k_1(\bm{x},\bm{z})$ and $k_2(\bm{x},\bm{z})$ are valid kernels over $\mathbb{R}^n \times \mathbb{R}^n$. Prove or disprove that the following are valid kernels.
 
-Use Mercer's theorem regarding the kernel or Gram matrix or the fact that a kernel can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$.
+Use Mercer's theorem regarding the Gram matrix\footnote{Equivalently known as the kernel matrix.} or the fact that a kernel can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$.
 
+%--------------------------------------- prelim -------------
 \subsection*{preliminaries}
 From Mercer, we know for each $k_1(\bm{x},\bm{z})$ and $k_2(\bm{x},\bm{z})$ we have corresponding kernel
 matrices $\bm{M}_1$ and $\bm{M}_2$ which are symmetric and positive semi-definite.
@@ -185,10 +202,12 @@ Positive semidefiniteness:
 	\left| \bm{M}_i \right| \geq 0
 \end{equation}
 %------------------------  a ------------------------%
-\subsection{$k(\bm{x},\bm{z}) = ak_1(\bm{x},\bm{z}) + bk_2(\bm{x},\bm{z}), a,b > 0; a,b \in \mathbb{R}$}
+\subsection{$k(\bm{x},\bm{z}) = ak_1(\bm{x},\bm{z}) + bk_2(\bm{x},\bm{z}), a,b > 0;$ $ a,b \in \mathbb{R}$}
 
-Firstly, we establish that for any  valid kernel $k(\bm{x},\bm{z}), ak(\bm{x},\bm{z}) | a > 0; a \in \mathbb{R}$:
-We know that for a square matrix $\bm{A}$ of size $nxn$, $\left| a\bm{A} \right| = a^n \left | A \right|.$, and since $a^n \geq 0 \forall n \in \mathbb{N}, a > 0$ Then the property from equation \ref{eq-pos-2} holds for both of our summands. Additionally, since the scalar multiplication of a symmetric matrix yields another symmetric matrix, both summands are valid kernels.
+Firstly, we establish that if $k(\bm{x},\bm{z})$ is a valid kernel, then 
+$ ak(\bm{x},\bm{z})$ is also a valid kernel  $\forall a > 0;$ $ a \in \mathbb{R}$:
+
+We know that for a square matrix $\bm{A}$ of size $n\times n$, $\left| a\bm{A} \right| = a^n \left | A \right|$. And, since $a \geq 0$, we know that $a^n \geq 0 $. Thus equation \ref{eq-pos-2} holds for both of our summands. Additionally, since the scalar multiplication of a symmetric matrix yields another symmetric matrix, both summands are are symmetric and therefore valid kernels.
 
 Now, let us say:
 \[ ak_1(\bm{x},\bm{z})  = k_1'(\bm{x},\bm{z}) \]
@@ -198,13 +217,15 @@ are both valid kernels with kernel matrices $\bm{M}_1'$ and $\bm{M}_2'$. The add
 
  Since both  $\bm{M}_1'$  and  $\bm{M}_2'$ are symmetric we can write:
  
- \[  \bm{M}_1' =  \bm{U}^T\bm{U} \]
-  \[  \bm{M}_2'  =  \bm{V}^T\bm{V} \]
+ \[  \bm{M}_1' =  \bm{U}^T\bm{\Lambda_U}\bm{U} \]
+  \[  \bm{M}_2'  =  \bm{V}^T\bm{\Lambda_V}\bm{V} \]
   and using equation \ref{eq-pos-1}:
 \begin{equation*}
 	\begin{aligned}
-		(\bm{x}^T\bm{U}^T\bm{U}\bm{x} +& \bm{x}^T\bm{V}^T\bm{V}\bm{x}) \geq 0\\
-		\bm{x}^T(\bm{U}^T\bm{U} +& \bm{V}^T\bm{V})\bm{x} \geq 0\\
+		(\bm{x}^T\bm{U}^T\bm{\Lambda_U}\bm{U}\bm{x} 
+			+& \bm{x}^T\bm{V}^T\bm{\Lambda_V}\bm{V}\bm{x}) \geq 0\\
+		\bm{x}^T(\bm{U}^T\bm{\Lambda_U}\bm{U} 
+			+& \bm{V}^T\bm{\Lambda_V}\bm{V})\bm{x} \geq 0\\
 		\bm{x}^T(\bm{M}_1' +& \bm{M}_2')\bm{x} \geq 0\\
 	\end{aligned}
 \end{equation*}
@@ -236,26 +257,36 @@ The eigenvalues of which are $\lambda_1 = -1, \lambda_2 = 1$, making $\bm{M}'$ a
 
 %------------------------  c ------------------------%
 \subsection{$k(\bm{x},\bm{z}) = k_1(\bm{x},\bm{z}) k_2(\bm{x},\bm{z})$}
-The kernel matrix $\bm{M}'$ of the product of two matrices $ k_1(\bm{x},\bm{z}), k_2(\bm{x},\bm{z})$ is equivalent to the element-wise multiplication of the respective two kernel matrices  $\bm{M}_1, \bm{M}_2$. This is also known as the Hadamard product or the Schur product. The Schur product theorem states that the Schur product of two positive semi-definite matrices is also positive semi-definite.
-It is trivial to show that symmetry is preserved under such conditions.
+The kernel matrix $\bm{M}'$ of the product of two matrices $ k_1(\bm{x},\bm{z}), k_2(\bm{x},\bm{z})$ is equivalent to the element-wise multiplication of the respective two kernel matrices  $\bm{M}' = \bm{M}_1 \odot \bm{M}_2$. This is also known as the Hadamard product or the Schur product. The Schur product theorem states that said product of two positive semi-definite matrices is also positive semi-definite.
+It is trivial to show that symmetry is preserved under such conditions. Thus $k(\bm{x},\bm{z}) = k_1(\bm{x},\bm{z}) k_2(\bm{x},\bm{z})$ is a valid kernel.
 
 %------------------------  d ------------------------%
 \subsection{$k(\bm{x},\bm{z}) = f(\bm{x})f(\bm{z}), where$ $f: \mathbb{R}^n \rightarrow \mathbb{R}$}\label{functions}
 Here we rely on the fact that a kernel can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$ where $\phi(\bm{x})$ maps
 $\bm{x}$ onto an n-dimensional space.
 
-It is trivial to see that if $n=1$ and $\phi = f$, $f(\bm{x})f(\bm{z})$ constitutes a valid kernel.
+It is trivial to see that if $n=1$ and $\phi = f$, $f(\bm{x})f(\bm{z})$ constitutes a valid kernel sinc it 
+can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$.
 
 %------------------------  e ------------------------%
-\subsection{$k(\bm{x},\bm{z}) = f(\bm{x})f(\bm{z}), where $ $p$ $pdf$.}
+\subsection{$k(\bm{x},\bm{z}) = p(\bm{x})p(\bm{z}), where $ $p$ $pdf$.}
 The same rationale as question \ref{functions} applies here.
 
 %------------------------------------------ Q 4 ----------------------------------------------------
 \section{Nearest neighbour vs decision trees, do boundaries coincide?}
-Boundaries do not necessarily coincide for these two classification strategies. In the case of trees, boundaries are composed of hyper-planes
-that are orthogonal to the features chosen for the separation and pass through the midpoint between neighboring points along the axis of the chosen features\footnote{A combination of features can also be used, but as a crude example, if both features are chosen in a 2-d space, boundaries would yield diagonal lines.}. Thus each segment of a decision-tree boundary can have one out of d directions for a d-dimensional space\footnote{Again, a combination of features may be used but the amount of directions to choose from is still rather limited.}. 
+Boundaries do not necessarily coincide for these two classification strategies; moreover, in typical usage, they would tend to be 
+non-coincidental but in some rare or contrived cases the boundaries might equate.
 
-Conversely, boundaries for nearest-neibours correspond to a Voronoi tessellation, where the each boundary segment corresponds to a hyper-plane running orthogonal to the line between the boundary's nearest neighbors and passing through the midpoint of such a line (thus said hyperplanes can have an any direction in the space).
+Decision tree boundaries are typically composed of hyper-planes
+that are orthogonal to the features $f_d$ chosen for each decision; boundaries pass through the midpoint 
+between points neighboring on 
+a projection along the axis of $f_d$\footnote{We 
+note that any function of an arbitrary number of features may be used as a decision or boundary segment but this is a
+ somewhat contrived usage of the decision tree algorithm.}. 
+Thus each segment of a decision-tree boundary can have one out of n directions for an n-dimensional 
+space. 
+
+Conversely, boundaries for nearest-neibours correspond to a Voronoi tessellation, where each boundary segment corresponds to a hyper-plane running orthogonal to the line between the boundary's nearest neighbors and passing through the midpoint of such a line (thus the ensemble of said hyperplanes has a wide gammut of directions witin the space).
 
 For an example, see figures \ref{fig:voronoi} and \ref{fig:tree}.
 
@@ -266,7 +297,7 @@ For an example, see figures \ref{fig:voronoi} and \ref{fig:tree}.
 	\hfill
 	\subfloat[decision tree]{
 	\includegraphics[clip, width=2in, trim=3in 3in 3in 1.4in]{decision-tree}\label{fig:tree}}
-\caption{A Voronoi tessellation has boundary segments in many different directions, perpendicular to the lines between any two nearest-neighbors whereas decision-tree boundary segments are perpendicular to any one of a given set of features or feature combinations}%      
+\caption{A Voronoi tessellation has boundary segments in many different directions, perpendicular to the lines between any two nearest-neighbors whereas decision-tree boundary segments are typically perpendicular to any one of a given set of features or feature combinations}%      
 \end{center}
 \end{figure}
 
