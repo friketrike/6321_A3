@@ -24,4 +24,4 @@ load('pima-indians-diabetes.data')
 Obs = pima_indians_diabetes(:, 1:2);
 C = pima_indians_diabetes(:,end);
 
-[h, alphas, errs] = ada_boost(Obs, C, 100);
+[h, alphas, errs] = ada_boost(Obs, C, 10000);

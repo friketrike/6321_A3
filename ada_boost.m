@@ -20,7 +20,7 @@ m = length(C);
 W = ones(m,1)/m;
 
 % TODO partition, loop over partitions 
-figure
+figure(1)
 plot(Obs(logical(C),1), Obs(logical(C),2), 'og')
 hold on
 plot(Obs(~logical(C),1), Obs(~logical(C),2), 'xr')
@@ -41,6 +41,8 @@ for round = 1:rounds % this or a function of divergence of test and train errs
     classifiedRightOrNot = ((2*C)-1).*((2*C_hat)-1);
     W = W .* exp(-alphas(round)*(classifiedRightOrNot));
     W = W./sum(W);
+    figure(2)
+    plot(W)
     % get new h
     % calculate train error given series of alphais his
     % calculate test error given series of alphais his
@@ -50,7 +52,8 @@ for round = 1:rounds % this or a function of divergence of test and train errs
     else
         colour = ' b'; 
     end
-
+    figure(1)
+    hold on;
     if Dim == 1
         plot([Threshold,Threshold],[min(Obs(:,2)),max(Obs(:,2))], colour);
     else
@@ -64,8 +67,8 @@ for round = 1:rounds % this or a function of divergence of test and train errs
     else
         errs(round, 1) = err;
     end
-    disp(round);
-    %pause(0.5)
+    disp({round, err, alphas(round)})
+    pause(0.05)
 %
 end    
 hold off
