@@ -21,12 +21,15 @@ diff_neighbors = [ones(1,d);0.5*abs(diff(ObsIDX_W_C_E(:,:,4)))];
 
 for n = 1:d
     for i = 1:m
-        %if diff_neighbors(i,n) == 1
-            yhat = [-1*ones(length(1:i-1),1);ones(length(i:m),1)];
-            ObsIDX_W_C_E(i,n,5) = sum(abs( ...
-                (yhat ~= ObsIDX_W_C_E(:,n,4)) ...
-                .*ObsIDX_W_C_E(:,n,3)));
-        %end
+        if diff_neighbors(i,n) == 1
+            C_hat = Obs(:,n) > ObsIDX_W_C_E(i,n,1);
+            err = sum((C_hat ~= C).*W);
+            ObsIDX_W_C_E(i,n,5) = err;
+%             yhat = [-1*ones(length(1:i-1),1);ones(length(i:m),1)];
+%             ObsIDX_W_C_E(i,n,5) = sum(abs( ...
+%                 (yhat ~= ObsIDX_W_C_E(:,n,4)) ...
+%                 .*ObsIDX_W_C_E(:,n,3)));
+        end
     end
 end
 
@@ -56,8 +59,11 @@ end
 % Now calculate where the split happens, the midpoint between two adjacent 
 % points on that feature dimension, repeat the first point so that decision
 % at the lower bound is just the smallest value of the feature space
-lower_bound = ObsIDX_W_C_E(:,Dim, 1) - diff(ObsIDX_W_C_E(:,Dim, 1))(1,:);
-feature_vals = [lower_bound; ObsIDX_W_C_E(:,Dim, 1)];
-Threshold = mean(feature_vals(idx:idx+1));
+cut_point = ObsIDX_W_C_E(idx,Dim, 1);
+feature_vals = unique(ObsIDX_W_C_E(:,Dim, 1));
+feature_vals = [(feature_vals(1) - feature_vals(2)); feature_vals];
+the_idx = cut_point == feature_vals;
+midpoints = feature_vals + 0.5*([diff(feature_vals);0]);
+Threshold = midpoints(the_idx);
 end
 

@@ -1,8 +1,10 @@
 
 
 % dumb sample usage for the time being...
-Obs = rand(10,2);
-C = (rand(10,1) + Obs(:,1) - 0.5 * Obs(:,2)) < 0.5;
+Obs = rand(20,2);
+C = (rand(20,1) + Obs(:,1) - 0.5 * Obs(:,2)) < 0.5;
+%Obs = [0,0;1,1;1,0;0,1];
+%C = logical([0;1;1;1]);
 % weights = ones(50,1);
 % weights = weights/sum(weights);
 % [t,d, polarity, e] = stump(someData, labels, weights);
@@ -22,4 +24,4 @@ C = (rand(10,1) + Obs(:,1) - 0.5 * Obs(:,2)) < 0.5;
 %Obs = pima_indians_diabetes(:, 1:2);
 %C = pima_indians_diabetes(:,end);
 
-[h, alphas, errs] = ada_boost(Obs, C, 10);
+[h, alphas, errs] = ada_boost(Obs, C, 100);

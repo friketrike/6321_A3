@@ -21,7 +21,7 @@ W = ones(m,1)/m;
 
 % TODO partition, loop over partitions 
 figure
-plot(Obs(logical(C),1), Obs(logical(C),2), '.g')
+plot(Obs(logical(C),1), Obs(logical(C),2), 'og')
 hold on
 plot(Obs(~logical(C),1), Obs(~logical(C),2), 'xr')
 
@@ -30,7 +30,7 @@ for round = 1:rounds % this or a function of divergence of test and train errs
     [ Threshold, Dim, polarity, err ] = stump(Obs, C, W);
     h(round, :) = [Threshold, Dim, polarity];
     
-    C_hat = Obs(:,h(round, 2)) < h(round, 1);
+    C_hat = Obs(:,h(round, 2)) > h(round, 1);
     if h(round, 3) == -1
         C_hat = ~C_hat;
     end
@@ -64,7 +64,7 @@ for round = 1:rounds % this or a function of divergence of test and train errs
     else
         errs(round, 1) = err;
     end
-    round
+    disp(round);
     %pause(0.5)
 %
 end    
