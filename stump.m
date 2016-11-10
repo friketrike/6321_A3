@@ -1,4 +1,4 @@
-function [ Threshold, Dim, polarity ] = stump( Obs, C, W )
+function [ Threshold, Dim, polarity, err ] = stump( Obs, C, W )
 %STUMP Returns the best decision stump as a threshold-dimension pair for
 %points contained in the Obs matrix given class label C and weights W 
 %vectors
@@ -21,12 +21,12 @@ diff_neighbors = [ones(1,d);0.5*abs(diff(ObsIDX_W_C_E(:,:,4)))];
 
 for n = 1:d
     for i = 1:m
-        if diff_neighbors(i,n) == 1
+        %if diff_neighbors(i,n) == 1
             yhat = [-1*ones(length(1:i-1),1);ones(length(i:m),1)];
             ObsIDX_W_C_E(i,n,5) = sum(abs( ...
                 (yhat ~= ObsIDX_W_C_E(:,n,4)) ...
                 .*ObsIDX_W_C_E(:,n,3)));
-        end
+        %end
     end
 end
 
@@ -37,15 +37,18 @@ end
 
 % we need to know along which direction it happened
 [~, Dim] = max(mx);
- 
+
+err = ObsIDX_W_C_E(idx(Dim),Dim,5);
+
 % recover the true index
 idx = idx(Dim);
 
 % polarity 1 means that positive class observations are contained at 
 % higher values for that feature, polarity -1 means positive observations
 % live at lower values than the threshold
-if ObsIDX_W_C_E(idx,Dim,5) > 0.5
+if err > 0.5
     polarity = -1;
+    err = 1 - err;
 else
     polarity = 1;
 end
@@ -53,7 +56,8 @@ end
 % Now calculate where the split happens, the midpoint between two adjacent 
 % points on that feature dimension, repeat the first point so that decision
 % at the lower bound is just the smallest value of the feature space
-feature_vals = [ObsIDX_W_C_E(1,Dim, 1);ObsIDX_W_C_E(:,Dim, 1)];
+lower_bound = ObsIDX_W_C_E(:,Dim, 1) - diff(ObsIDX_W_C_E(:,Dim, 1))(1,:);
+feature_vals = [lower_bound; ObsIDX_W_C_E(:,Dim, 1)];
 Threshold = mean(feature_vals(idx:idx+1));
 end
 
