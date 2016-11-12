@@ -1,14 +1,14 @@
-
 function [h, alphas, errs] = ada_boost(Obs, C, rounds)
 %ADA_BOOST takes a series of observations (each observation as a row), labels
 %and an optional argument giving an upper bound to iterations. It returns a series
-%{thr,dim,polarity} tuples per stump, their associated weights and a a two-column 
+%[thr,dim,polarity] tuples per stump, their associated weights and a a two-column 
 %error matrix where each row is associatedassociated with each iteration and 
 %training and test errors populate the first and second columns respectively.
+% TODO Detailed info?
 
 % default early termination
 if nargin < 3 || isempty(rounds)
-    rounds = 2; % TODO, add more
+    rounds = 50; % TODO, add more
 end
 
 % container for Threshold, Dim, polarity tuples
@@ -25,8 +25,9 @@ plot(Obs(logical(C),1), Obs(logical(C),2), 'og')
 hold on
 plot(Obs(~logical(C),1), Obs(~logical(C),2), 'xr')
 
-for round = 1:rounds % this or a function of divergence of test and train errs
-    % TODO change Obs for Obs_training
+% TODO maybe have the rounds looping in caller
+% So the caller can evaluate the error divergence between train and test?
+for round = 1:rounds
     [ Threshold, Dim, polarity, err ] = stump(Obs, C, W);
     h(round, :) = [Threshold, Dim, polarity];
     

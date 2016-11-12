@@ -23,5 +23,17 @@ C = (rand(20,1) + Obs(:,1) - 0.5 * Obs(:,2)) < 0.5;
 %load('pima-indians-diabetes.data')
 %Obs = pima_indians_diabetes(:, 1:2);
 %C = pima_indians_diabetes(:,end);
+%%Just putting this in from the last assignment, TODO taylor it to our needs here...
+%TODO bring plotting outside of ada_boost
+%TODO figure out error not converging
+% get data...
+X = load('wpbcx.dat');
+X = [X, ones(size(X,1),1)];
+y = load('wpbcy.dat');
+
+num_folds = 10;
+
+folds_info = cvpartition(length(y), 'kfold', num_folds);
+folds_idx = randperm(length(y));
 
 [h, alphas, errs] = ada_boost(Obs, C, 100);
