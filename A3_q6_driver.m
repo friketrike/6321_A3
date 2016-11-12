@@ -1,8 +1,8 @@
 
 
 % dumb sample usage for the time being...
-Obs = rand(20,2);
-C = (rand(20,1) + Obs(:,1) - 0.5 * Obs(:,2)) < 0.5;
+%%Obs = rand(20,2);
+%%C = (rand(20,1) + Obs(:,1) - 0.5 * Obs(:,2)) < 0.5;
 %Obs = [0,0;1,1;1,0;0,1];
 %C = logical([0;1;1;1]);
 % weights = ones(50,1);
@@ -20,6 +20,7 @@ C = (rand(20,1) + Obs(:,1) - 0.5 * Obs(:,2)) < 0.5;
 % end
 % 
 % hold off
+
 %load('pima-indians-diabetes.data')
 %Obs = pima_indians_diabetes(:, 1:2);
 %C = pima_indians_diabetes(:,end);
@@ -36,4 +37,9 @@ num_folds = 10;
 folds_info = cvpartition(length(y), 'kfold', num_folds);
 folds_idx = randperm(length(y));
 
-[h, alphas, errs] = ada_boost(Obs, C, 100);
+
+
+
+
+
+[h, alphas, errs] = ada_boost(Obs, C, 10000);
