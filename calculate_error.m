@@ -14,7 +14,7 @@ for i = 1:m
         threshold = h(k, 1);
         dim = h(k, 2);
         pol = h(k, 3);
-        contrib_k = (2*(pol*X(i, dim) > pol*threshold)-1)*alphas(k);
+        contrib_k = (2*(pol*X(i, dim) >= pol*threshold)-1)*alphas(k);
         y_hat(i) = y_hat(i) + contrib_k;
     end
     y_hat(i) = y_hat(i) >= 0;

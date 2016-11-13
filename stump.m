@@ -7,63 +7,59 @@ function [ Threshold, Dim, polarity, err ] = stump( X, y, W )
 %   weights associated with each Observation (eg weights assigned by a
 %   boosting algorithm. The threshold is the point at which a decision
 %   boundary perpendicular to the selected dimension should pass.
-[m,d] = size(X);
-% Normalize W, in case it hasn't been done
-W = W/sum(W);
-ObsIDX_W_C_E = zeros(m,d,5);
-%Order each feature, superimpose a matrix of row indices and then
-%superimpose row weights, row classes and errors over it .
-[ObsIDX_W_C_E(:,:,1), ObsIDX_W_C_E(:,:,2)] = sort(X);
-ObsIDX_W_C_E(:,:,3) = W(ObsIDX_W_C_E(:,:,2));
-ObsIDX_W_C_E(:,:,4) = (y(ObsIDX_W_C_E(:,:,2))*2)-1;
-ObsIDX_W_C_E(:,:,5) = NaN*(ones(m,d));
-diff_neighbors = [ones(1,d);0.5*abs(diff(ObsIDX_W_C_E(:,:,4)))];
+    [m,d] = size(X);
+    % Normalize W, in case it hasn't been done
+    W = W/sum(W);
+    Obs = zeros(m,d);
+    IDXs = zeros(m,d);
+    % Order each feature, keep a matrix of row indices per feature and then
+    % keep row classes and errors.
+    [Obs, IDXs] = sort(X);
+    Ys = (y(IDXs)*2)-1;
+    E = NaN*(ones(m,d));
+    % we can only have a split between neighbours of different classes, don't
+    % bother checking between neighbours of the same class
+    diff_neighbors = [2*ones(1,d);0.5*abs(diff(Ys))];
 
-for n = 1:d
-    for i = 1:m
-        if diff_neighbors(i,n) == 1
-            C_hat = X(:,n) > ObsIDX_W_C_E(i,n,1);
-            err = sum((C_hat ~= y).*W);
-            ObsIDX_W_C_E(i,n,5) = err;
-%             yhat = [-1*ones(length(1:i-1),1);ones(length(i:m),1)];
-%             ObsIDX_W_C_E(i,n,5) = sum(abs( ...
-%                 (yhat ~= ObsIDX_W_C_E(:,n,4)) ...
-%                 .*ObsIDX_W_C_E(:,n,3)));
+    for n = 1:d
+        for i = 1:m
+            %if diff_neighbors(i,n) == 1
+                C_hat = X(:,n) >= Obs(i,n);
+                err = sum((C_hat ~= y).*W);
+                E(i,n) = err;
+            %end
         end
     end
-end
 
-% ObsIDX_W_C_E % just a print for debugging purposes
+    % get the error farthest from 0.5, the most informative split
+    [mx,idx] = max(abs(0.5-E));
 
-% get the error farthest from 0.5, the most informative split
-[mx,idx] = max(abs(0.5-ObsIDX_W_C_E(:,:,5)));
+    % we need to know along which direction it happened
+    [~, Dim] = max(mx);
 
-% we need to know along which direction it happened
-[~, Dim] = max(mx);
+    % recover the true index
+    idx = idx(Dim);
 
-err = ObsIDX_W_C_E(idx(Dim),Dim,5);
+    err = E(idx,Dim);
 
-% recover the true index
-idx = idx(Dim);
+    % polarity 1 means that positive class observations are contained at 
+    % higher values for that feature, polarity -1 means positive observations
+    % live at lower values than the threshold
+    if err > 0.5
+        polarity = -1;
+        err = 1 - err;
+    else
+        polarity = 1;
+    end
 
-% polarity 1 means that positive class observations are contained at 
-% higher values for that feature, polarity -1 means positive observations
-% live at lower values than the threshold
-if err > 0.5
-    polarity = -1;
-    err = 1 - err;
-else
-    polarity = 1;
-end
-
-% Now calculate where the split happens, the midpoint between two adjacent 
-% points on that feature dimension, repeat the first point so that decision
-% at the lower bound is just the smallest value of the feature space
-cut_point = ObsIDX_W_C_E(idx,Dim, 1);
-feature_vals = unique(ObsIDX_W_C_E(:,Dim, 1));
-feature_vals = [(feature_vals(1) - feature_vals(2)); feature_vals];
-the_idx = cut_point == feature_vals;
-midpoints = feature_vals + 0.5*([diff(feature_vals);0]);
-Threshold = midpoints(the_idx);
+    % Now calculate where the split happens, the midpoint between two adjacent 
+    % points on that feature dimension, repeat the first point so that decision
+    % at the lower bound is just the smallest value of the feature space
+    cut_point = Obs(idx,Dim);
+    feature_vals = unique(Obs(:,Dim));
+    the_real_idx = cut_point == feature_vals;
+    feature_vals = [(feature_vals(1) - feature_vals(2)); feature_vals];
+    midpoints = feature_vals + 0.5*([diff(feature_vals);0]);
+    Threshold = midpoints(the_real_idx);
 end
 
