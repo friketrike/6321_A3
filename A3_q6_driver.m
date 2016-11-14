@@ -51,7 +51,12 @@ for fold = 1:num_folds
     end
     %%% KNN loop %%%
     for l = 1:m
-        yi_hats = knn(X_train, y_train, X_train(l, :),max_k);
+        % remove point i from the training set
+        X_train_temp = X_train;
+        y_train_temp = y_train;
+        X_train_temp(l,:) = [];
+        y_train_temp(l) = [];
+        yi_hats = knn(X_train_temp, y_train_temp, X_train(l, :),max_k);
         for k = 1:max_k
             if yi_hats(k) ~= y_train(l)
                 errs_knn(k, fold, 1) = errs_knn(k, fold, 1) + 1/m;
@@ -78,7 +83,7 @@ title('10-fold adaboost')
 xlabel('iterations')
 ylabel('error')
 hold off
-% saveas(gcf, 'ada-plot.pdf');
+saveas(gcf, 'ada-plot.pdf');
 
 figure(2)
 plot(mean(errs_knn(:,:,1), 2))
@@ -89,4 +94,14 @@ title('10-fold knn')
 xlabel('k')
 ylabel('error')
 hold off
-% saveas(gcf, 'knn-plot.pdf')
+saveas(gcf, 'knn-plot.pdf')
+
+% how well did we do?
+disp('Here''s how well we did:')
+disp(sprintf('best prediction given on test data by adaboost:\n\t%d',...
+              min(mean(errs_ada(:,:,2), 2)) ));
+disp(sprintf('best prediction given on test data by knn:\n\t%d',...
+              min(mean(errs_knn(:,:,2), 2)) ));              
+disp(sprintf('empirical ratio of class 1 to class 0:\n\t%d',...
+              sum(y)/length(y) ));
+

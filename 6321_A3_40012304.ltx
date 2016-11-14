@@ -48,9 +48,14 @@
 Propose an adequate learning algorithm for each instance.
 %------------------------  a ------------------------%
 \subsection{1000 samples, 6-dimensional continuous space, classify $\sim$100 examples.}
-curse of dimensionality - fixed error rate e n $~ (c/e)^((d+4)/4)$
-
-non-parametric? still 92 \% accuracy is possible...
+This could be a candidate for knn, despite the dimensionality approaching higher orders. 
+We can still somewhat escape the curse of dimensionality, since for non-parametric 
+methods, in order to have an optimal error rate $e$ we require at least $n$ samples where 
+$n \sim \left( \frac{c}{e}\right)^{\frac{d+4}{4}}$, $c$ is the number of classes, and $d$
+is the number of dimenions\footnote{See the non-parametric methods pdf used in class.}. 
+Having 1000 samples in a 6-dimensional space would still allow for an error 
+$e = 0.0632$ in the best case\footnote{Said otherwise, a possible success rate of 93.68\%}. 
+An appropriate value for k would need to be found via cross-validation.
 
 %------------------------------------- b ------------------------------------------ %
 
@@ -59,19 +64,21 @@ One of the easiest classification algorithms to explain in layman's terms is dec
 since the method should be justified to the board, this would probably be an adequate choice.
 Furthermore, given that  the stakes for such a classification are very high, an ensemble approach 
 such as random forests / bagging could increase the classifier's performance by diminishing 
-avoiding overfitting.
+the tree's inherent variance and tendency to overfit.
+\clearpage
 
 %------------------------------------- c ------------------------------------------ %
 \subsection{Binary classification, train with very large data-set of products / customer preferences. Input
 - 1 million bits - other clients' preferences. Frequent updates.}
-A recommender system of this nature could use naive bayes in the similar way to document classification. 
+A recommender system of this nature could use naive bayes in a similar way to the document classification
+example presented in class. 
 In this case, the features of each product are the clients who have shown interest in the product. And
 the training relies on the trends in clients' preferences accross all products.
 NB could work well given the size of the dataset and the need for frequent updates. However, 
-a drawback to this approach is that the recommender assumes feature independence while relying on the 
+a drawback to this approach is that the recommender assumes feature-independence while relying on the 
 underlying relation between customer preferences, which in turn implies feature-dependency.
 A similar problem arises in document classification, where the presence of words in a document cannot 
-really be considered independent, yet naive bayes performs well.
+really be considered independent, yet NB still performs well for said task.
 
 %------------------------------------- d ------------------------------------------ %
 \subsection{40 attributes, discrete and continuous, some have noise; only about 50 labeled observations.}
@@ -124,13 +131,14 @@ With constraints:
     p_i \geq& 0 \mbox{,  } \forall i \in \{1,2,\ldots, N  \}
 \end{aligned}
 \]
-We use Lagrange for maximization with constraints with a lagrangian multiplier only for the first constraint\footnote{The second constraint is satisfied by the solution.}:
+We use Lagrange for maximization with constraints with a lagrangian multiplier only for the first 
+constraint\footnote{The second series of constraints are satisfied by the solution using only $1-\sum_{n} p_n = 0$.}:
 \[
 \Lagr(p_1, p_2, \ldots, p_n, \lambda) = \sum\limits_{n=1}^N p_n log(p_n) - \lambda (1 - \sum\limits_{n=1}^N p_n)
 \]
-And by setting the gradient of the Lagrangian function to 0
-\[ \nabla_{p_1,p_2, \ldots p_N, \lambda}\Lagr(p_1, p_2, \ldots, p_n, \lambda = 0\]
-We are thus left with a system:
+And by setting the gradient of the Lagrangian function to 0,
+$\nabla_{p_1,p_2, \ldots p_N, \lambda}\Lagr(p_1, p_2, \ldots, p_n, \lambda = 0$,,
+we are left with a system of equations:
 \begin{equation*}
     \begin{aligned}
         \frac{\partial_\Lagr}{\partial_{p_1}} \sum\limits_{n=1}^N p_n log(p_n) 
@@ -139,8 +147,9 @@ We are thus left with a system:
         -& \lambda (1 - \sum\limits_{n=1}^N p_n) = 0\\
         \vdots & \\
         \frac{\partial_\Lagr}{\partial_{p_N}} \sum\limits_{n=1}^N p_n log(p_n) 
+        -& \lambda (1 - \sum\limits_{n=1}^N p_n) = 0\\ 
+        \frac{\partial_\Lagr}{\partial_{\lambda}} \sum\limits_{n=1}^N p_n log(p_n) 
         -& \lambda (1 - \sum\limits_{n=1}^N p_n) = 0\\
-        \frac{\partial_\Lagr}{\partial_{\lambda}}\lambda(1 -& \sum\limits_{n=1}^N p_n) = 0
     \end{aligned}
 \end{equation*}
 Which in turn yields:
@@ -236,7 +245,8 @@ Now, let us say:
 \[ ak_1(\bm{x},\bm{z})  = k_1'(\bm{x},\bm{z}) \]
 and
 \[ bk_2(\bm{x},\bm{z})  = k_2'(\bm{x},\bm{z}) \]
-are both valid kernels with kernel matrices $\bm{M}_1'$ and $\bm{M}_2'$. The addition of two symmetric matrices yields a symmetric matrix, so we need to check for positive semi-definiteness.
+are both valid kernels with kernel matrices $\bm{M}_1'$ and $\bm{M}_2'$. The addition of two 
+symmetric matrices yields a symmetric matrix, so we need to check for positive semi-definiteness.
 
  Since both  $\bm{M}_1'$  and  $\bm{M}_2'$ are symmetric we can write:
  
@@ -276,7 +286,7 @@ M_2 =
     1 & 0  \\
 \end{bmatrix}
 \]
-The eigenvalues of which are $\lambda_1 = -1, \lambda_2 = 1$, making $\bm{M}'$ a non positive semi-definite matrix and thus $k(\bm{x}, \bm{z})$ is not a valid kernel.
+The eigenvalues of which are $\lambda_1 = -1, \lambda_2 = 1$, making $\bm{M}'$ a non-positive semi-definite matrix and thus $k(\bm{x}, \bm{z})$ is not a valid kernel.
 
 %------------------------  c ------------------------%
 \subsection{$k(\bm{x},\bm{z}) = k_1(\bm{x},\bm{z}) k_2(\bm{x},\bm{z})$}
@@ -293,23 +303,27 @@ can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$.
 
 %------------------------  e ------------------------%
 \subsection{$k(\bm{x},\bm{z}) = p(\bm{x})p(\bm{z}), where $ $p$ $pdf$.}
-The same rationale as question \ref{functions} applies here.
+The same rationale as question \ref{functions} applies here, $k(\bm{x},\bm{z}) = p(\bm{x})p(\bm{z})$ is a 
+valid kernel.
 
 %------------------------------------------ Q 4 ----------------------------------------------------
 \section{Nearest neighbour vs decision trees, do boundaries coincide?}
-Boundaries do not necessarily coincide for these two classification strategies; moreover, in typical usage, they would tend to be 
-non-coincidental but in some rare or contrived cases the boundaries might equate.
+Boundaries do not necessarily coincide for these two classification strategies; moreover, 
+in typical usage, they would tend to be non-coincidental but in some rare or contrived cases\footnote{Eg
+A dataset consisting of two points; the usage of decision functions of an arbitrary number of features, etc.}
+the boundaries might equate.
 
 Decision tree boundaries are typically composed of hyper-planes
 that are orthogonal to the features $f_d$ chosen for each decision; boundaries pass through the midpoint 
 between points neighboring on 
-a projection along the axis of $f_d$\footnote{We 
-note that any function of an arbitrary number of features may be used as a decision or boundary segment but this is a
- somewhat contrived usage of the decision tree algorithm.}. 
-Thus each segment of a decision-tree boundary can have one out of n directions for an n-dimensional 
+a projection along the axis of $f_d$. 
+Thus each segment of a decision-tree boundary will generally have one out of n directions for an n-dimensional 
 space. 
 
-Conversely, boundaries for nearest-neibours correspond to a Voronoi tessellation, where each boundary segment corresponds to a hyper-plane running orthogonal to the line between the boundary's nearest neighbors and passing through the midpoint of such a line (thus the ensemble of said hyperplanes has a wide gammut of directions witin the space).
+Conversely, boundaries for nearest-neibours form a Voronoi tessellation, where each boundary 
+segment corresponds to a hyper-plane running orthogonal to the line between a given point and its nearest 
+neighbors while passing through the midpoint of such a line (thus the ensemble of said hyperplanes has a 
+wide gammut of directions within the space).
 
 For an example, see figures \ref{fig:voronoi} and \ref{fig:tree}.
 
@@ -387,22 +401,14 @@ And given the class density and probability, we can see that for any region with
 %------------------------------------------ Q 6 ----------------------------------------------------
 \section{Implementation}
 \begin{verbatim}
-    min(mean(errs_ada(:,:,2), 2))
-
-    ans =
-
-        0.2308
-
-    >> min(mean(errs_knn(:,:,2), 2))
-
-    ans =
-
-        0.2221
-
-    >> sum(y)/length(y)             
-
-    ans =
-
-        0.2371
+best prediction given on test data by adaboost:
+min(mean(errs_ada(:,:,2), 2))
+        2.313158e-01
+best prediction given on test data by knn:
+min(mean(errs_knn(:,:,2), 2))
+        2.578947e-01
+empirical ratio of class 1 to class 0:
+sum(y)/length(y)             
+        2.371134e-01
 \end{verbatim}
 \end{document}
