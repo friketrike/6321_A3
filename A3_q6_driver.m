@@ -1,11 +1,6 @@
-
-% Testing with different cases...
-% % X = rand(50,2);
-% % y = (rand(50,1) + X(:,1) - 0.5 * X(:,2)) < 0.5;
-
-% % load('pima-indians-diabetes.data')
-% % X = pima_indians_diabetes(:, 1:end-1);
-% % y = pima_indians_diabetes(:,end);
+% COMP 6321 Machine Learning, Fall 2016
+% Federico O'Reilly Regueiro - 40012304
+% Assignment 3, due November 17
 
 X = load('wpbcx.dat');
 y = load('wpbcy.dat');
@@ -55,24 +50,22 @@ for fold = 1:num_folds
                                            h(1:i, :), alphas(1:i));
     end
     %%% KNN loop %%%
-    for k = 1:max_k
-        err_k_train = 0;
-        err_k_test = 0;
-        for l = 1:m            
-            yi_hat = knn(X_train, y_train, X_train(l, :), k);
-            if yi_hat ~= y_train(l)
-                err_k_train = err_k_train + 1;
+    for l = 1:m
+        yi_hats = knn(X_train, y_train, X_train(l, :),max_k);
+        for k = 1:max_k
+            if yi_hats(k) ~= y_train(l)
+                errs_knn(k, fold, 1) = errs_knn(k, fold, 1) + 1/m;
             end
         end
-        n = length(y_test);    
-        for l = 1:n
-            yi_hat = knn(X_train, y_train, X_test(l, :), k);
-            if yi_hat ~= y_test(l)
-                err_k_test = err_k_test + 1;
+    end
+    n = length(y_test);
+    for l = 1:n
+        yi_hats = knn(X_train, y_train, X_test(l, :),max_k);
+        for k = 1:max_k
+            if yi_hats(k) ~= y_train(l)
+                errs_knn(k, fold, 2) = errs_knn(k, fold, 2) + 1/n;
             end
         end
-        errs_knn(k, fold, 1) = err_k_train/m;
-        errs_knn(k, fold, 2) = err_k_test/n;
     end
 end
 
@@ -80,12 +73,12 @@ figure(1)
 plot(mean(errs_ada(:,:,1), 2))
 hold on;
 plot(mean(errs_ada(:,:,2), 2))
-legend('training error', 'testing error')
+legend('training error', 'testing error', 'location', 'east')
 title('10-fold adaboost')
 xlabel('iterations')
 ylabel('error')
 hold off
-print('ada-plot.pdf');
+% saveas(gcf, 'ada-plot.pdf');
 
 figure(2)
 plot(mean(errs_knn(:,:,1), 2))
@@ -96,4 +89,4 @@ title('10-fold knn')
 xlabel('k')
 ylabel('error')
 hold off
-print('knn-plot.pdf')
+% saveas(gcf, 'knn-plot.pdf')

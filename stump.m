@@ -1,12 +1,16 @@
+% COMP 6321 Machine Learning, Fall 2016
+% Federico O'Reilly Regueiro - 40012304
+% Assignment 3, due November 17
+
 function [ Threshold, Dim, polarity, err ] = stump( X, y, W )
 %STUMP Returns the best decision stump as a threshold-dimension pair for
-%points contained in the Obs matrix given class label C and weights W 
+%observation contained in the X matrix given class label y and weights W 
 %vectors
-%   Obs should contain row entries for observations, where columns are
-%   features. C is a vector containing binary classifications and W are the
-%   weights associated with each Observation (eg weights assigned by a
+%   X should contain row entries for observations, where columns are
+%   features. y is a vector containing binary classifications and W are the
+%   weights associated with each observation in x (eg weights assigned by a
 %   boosting algorithm. The threshold is the point at which a decision
-%   boundary perpendicular to the selected dimension should pass.
+%   boundary perpendicular to the selected dimension Dim should pass.
     [m,d] = size(X);
     % Normalize W, in case it hasn't been done
     W = W/sum(W);
@@ -23,11 +27,11 @@ function [ Threshold, Dim, polarity, err ] = stump( X, y, W )
 
     for n = 1:d
         for i = 1:m
-            %if diff_neighbors(i,n) == 1
+            if diff_neighbors(i,n) == 1
                 C_hat = X(:,n) >= Obs(i,n);
                 err = sum((C_hat ~= y).*W);
                 E(i,n) = err;
-            %end
+            end
         end
     end
 

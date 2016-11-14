@@ -1,11 +1,14 @@
-function [h, alpha, W] = ada_boost(X, y, W)
-%ADA_BOOST takes a series of observations (each observation as a row), labels
-%and a vector W of weights for each observation. It returns a series
-%[thr,dim,polarity] tuples per stump, their associated weights and a a two-column 
-%error matrix where each row is associatedassociated with each iteration and 
-%training and test errors populate the first and second columns respectively.
-% TODO Detailed info?
+% COMP 6321 Machine Learning, Fall 2016
+% Federico O'Reilly Regueiro - 40012304
+% Assignment 3, due November 17
 
+function [h, alpha, W] = ada_boost(X, y, W)
+%ADA_BOOST takes an observation matrix X (each observation as a row), labels
+%y and a vector W of weights for each observation. It returns a series
+%h [thr,dim,polarity] tuples per stump, their associated weights and a a 
+%two-column error matrix.
+%   for the error matrix, row is associated with each iteration and training 
+%   and test errors populate the first and second columns respectively.
 
     [ Threshold, Dim, polarity, err ] = stump(X, y, W);
     h = [Threshold, Dim, polarity];

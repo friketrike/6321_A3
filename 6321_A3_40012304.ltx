@@ -386,4 +386,23 @@ And given the class density and probability, we can see that for any region with
 
 %------------------------------------------ Q 6 ----------------------------------------------------
 \section{Implementation}
+\begin{verbatim}
+    min(mean(errs_ada(:,:,2), 2))
+
+    ans =
+
+        0.2308
+
+    >> min(mean(errs_knn(:,:,2), 2))
+
+    ans =
+
+        0.2221
+
+    >> sum(y)/length(y)             
+
+    ans =
+
+        0.2371
+\end{verbatim}
 \end{document}

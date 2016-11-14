@@ -1,3 +1,7 @@
+% COMP 6321 Machine Learning, Fall 2016
+% Federico O'Reilly Regueiro - 40012304
+% Assignment 3, due November 17
+
 function [ err, y_hat ] = calculate_error( X, y, h, alphas )
 %CALCULATE_ERROR calculates the error given a dataset X, its target labels
 %y and the ensemble adaboost predictor h, alpha.
