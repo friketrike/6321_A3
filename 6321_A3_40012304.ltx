@@ -1,6 +1,6 @@
 \documentclass{article}
 
-% \usepackage[margin=0.75in]{geometry}
+\usepackage[margin=1.2in]{geometry}
 
 \usepackage{titlesec}
 \usepackage{graphicx}
@@ -9,12 +9,33 @@
 \usepackage{caption}
 \usepackage{amsmath}
 \usepackage{bm}
-%\usepackage{listings}
 \usepackage{float}
 \usepackage{enumerate}
 \usepackage{amssymb}
 
-%\lstset{language=Matlab}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Matlab,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
 
 \newcommand{\Lagr}{\mathcal{L}}
 
@@ -65,18 +86,19 @@ since the method should be justified to the board, this would probably be an ade
 Furthermore, given that  the stakes for such a classification are very high, an ensemble approach 
 such as random forests / bagging could increase the classifier's performance by diminishing 
 the tree's inherent variance and tendency to overfit.
-\clearpage
 
 %------------------------------------- c ------------------------------------------ %
 \subsection{Binary classification, train with very large data-set of products / customer preferences. Input
 - 1 million bits - other clients' preferences. Frequent updates.}
 A recommender system of this nature could use naive bayes in a similar way to the document classification
 example presented in class. 
-In this case, the features of each product are the clients who have shown interest in the product. And
-the training relies on the trends in clients' preferences accross all products.
+In this case, the features of each product are the clients who have shown interest in the product. The 
+training would rely on the trends in clients' preferences accross all products.
 NB could work well given the size of the dataset and the need for frequent updates. However, 
 a drawback to this approach is that the recommender assumes feature-independence while relying on the 
-underlying relation between customer preferences, which in turn implies feature-dependency.
+underlying relation between customer preferences, which in turn implies feature-dependency\footnote{Eg, If
+customer A and customer B have both shown interest in a large set of products, they are likely to show similar 
+preferences for new products.}.
 A similar problem arises in document classification, where the presence of words in a document cannot 
 really be considered independent, yet NB still performs well for said task.
 
@@ -330,10 +352,10 @@ For an example, see figures \ref{fig:voronoi} and \ref{fig:tree}.
 \begin{figure}[H]
 \begin{center}
 	\subfloat[Nearest-neighbour]{
-	\includegraphics[width=2.1in, trim=1.3in 3.3in 1.2in 3.3in]{Voronoi}\label{fig:voronoi}}
+	\includegraphics[width=2.6in, trim=1.6in 3.3in 1.5in 3.3in]{Voronoi}\label{fig:voronoi}}
 	\hfill
 	\subfloat[decision tree]{
-	\includegraphics[clip, width=2in, trim=3in 3in 3in 1.4in]{decision-tree}\label{fig:tree}}
+	\includegraphics[clip, width=2.6in, trim=3in 3in 3in 1.4in]{decision-tree}\label{fig:tree}}
 \caption{A Voronoi tessellation has boundary segments in many different directions, perpendicular to the lines between any two nearest-neighbors whereas decision-tree boundary segments are typically perpendicular to any one of a given set of features or feature combinations}%      
 \end{center}
 \end{figure}
@@ -360,12 +382,36 @@ and
 The minimal multi-class classification error rate $P^*$ is given by:
 
 \[
-		P^* = 1-\int \arg\max\limits_i P(\omega_i)P(x|\omega_i)dx
+		P^* = 1-\int \arg\max\limits_i P(\omega_i|x)P(x)dx
 \]
-And given the class density and probability, we can see that for any region with overlapping densities, the choice of any i will maximize. Additionally, we see that the constraints imposed by existing densities demand that $0 \leq r \leq \frac{c-1}{c}$. This in turn implies that densities overlap only in $[0, \frac{cr}{c-1}]$ Thus:
+We use Bayes to obtain $P(x)$:
+\[ P(x)=P(x|\omega_i)P(\omega_i) =
+	\begin{cases}
+	    \frac{1}{c} & \quad 0\leq x \leq \frac{cr}{c-1}\\
+	    \frac{1}{c} & \quad i \leq x \leq i + 1 - \frac{cr}{c-1}\\
+		         0 & \quad otherwise
+	\end{cases}
+\]
+We also use Bayes to obtain $P(\omega_i|x)$:
+\[ 
+	\begin{aligned}
+		P(\omega_i|x) =&\frac{P(x|\omega_i)P(x)}{P(\omega_i)} \\
+						  =&\frac{P(x|\omega_i)P(x|\omega_i)P(\omega_i)}{P(\omega_i)}\\
+						  =&P^{2}(x|\omega_i)\\
+	\end{aligned}
+\]
+\[
+	P(\omega_i|x)=
+	\begin{cases}
+	    1 & \quad 0\leq x \leq \frac{cr}{c-1}\\
+	    1 & \quad i \leq x \leq i + 1 - \frac{cr}{c-1}\\
+		         0 & \quad otherwise
+	\end{cases}
+\]
+Given the class density and probability, we can see that for any region with overlapping densities, the choice of any i will maximize. Additionally, we see that the constraints imposed by existing densities demand that $0 \leq r \leq \frac{c-1}{c}$. This in turn implies that densities overlap only in $[0, \frac{cr}{c-1}]$ thus:
 \[
 	\begin{aligned}
-		P^* =& 1-\int P(\omega_1)P(x|\omega_1)dx\\
+		P^* =& 1-\int P(\omega_1|x)P(x)dx\\
 		         =& 1 - \frac{1}{c}\int_0^{\frac{cr}{c-1}}dx - \sum_{i=1}^{c}
 		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}dx \\ %
 		        =& 1 - \frac{1}{c}\frac{cr}{c-1} - 1-\frac{cr}{c-1} \\ %  		
@@ -400,15 +446,127 @@ And given the class density and probability, we can see that for any region with
 
 %------------------------------------------ Q 6 ----------------------------------------------------
 \section{Implementation}
+In the interest of comparing methods, I have chosen to do both adaboost and knn. Both implementations rely on
+a single driver script, (please see attached \texttt{A3\textunderscore q6\textunderscore driver.m}) which we
+include also at the end of this sub-section for the reader's convenience. In order to run the code 
+created for this assignment, one must call \texttt{A3\textunderscore q6\textunderscore driver.m} 
+from within Matlab while including the function files that were created for each method in the working 
+directory or executable path. Adaboost relies on \texttt{ada\textunderscore boost.m},
+\texttt{stump.m} and \texttt{calculate\textunderscore error.m}, while KNN simply relies on \texttt{knn.m}.
+The function files are included as attachments and shall be detailed and printed in sub-sections 
+\ref{sec:adaboost} and \ref{sec:knn} for the reader's convenience.
+
+The driver script deals with loading the data creating the partitions for the k-fold CV, instantiating maximum 
+number of iterations or maximum number of neighbors for each one of the methods and plotting results. 
+Each classifier, relies on function scripts written for the classifier. 
+
+\texttt{A3\textunderscore q6\textunderscore driver.m} (omitting header and final print instructions):
+\lstinputlisting[breaklines, firstline=5, lastline=75, firstnumber=5]{A3_q6_driver.m}
+
+%------------------------------------------ a - adaboost -----------------------------------------
+\subsection{Adaboost}\label{sec:adaboost}
+The implementation relies on a driver script ( common 
+to both adaboost and knn) and two function files \texttt{ada\textunderscore boost.m}, \texttt{stump.m} and 
+\texttt{calculate\textunderscore error.m}.
+
+The driver calls \texttt{ada\textunderscore boost.m} for as many iterations as indicated, while retaining a copy of the 
+weak classifiers $h$, the classifier weights $\alpha$ and the observation weights $w$ after each iteration.
+Each time it runs, \texttt{ada\textunderscore boost.m} calls \texttt{stump.m} with the appropriate observation-weights 
+and the later returns a weak classifier $h$, for which \texttt{ada\textunderscore boost.m} calculates a weight $\alpha$.
+After each iteration i of training with the training set, the driver script uses the accrued $h_i$, 
+$\alpha_i$ pairs to call \texttt{calculate\textunderscore error.m} both with the training and testing data
+in order to store training and testing errors (see lines 46 to 50 in the driver script).
+
+Note that most of the effort required to get adaboost working was put into, not so much \texttt{ada\textunderscore boost.m}
+but into \texttt{stump.m}, which
+
+\texttt{ada\textunderscore boost.m} (omitted header)
+\lstinputlisting[breaklines, firstline=5, firstnumber=5]{ada_boost.m}
+
+\texttt{stump.m} (omitted header)
+\lstinputlisting[breaklines, firstline=5, firstnumber=5]{stump.m}
+
+\texttt{calculate\textunderscore error.m} (omitted header)
+\lstinputlisting[breaklines, firstline=5, firstnumber=5]{calculate_error.m}
+
+Surprisingly, adaboost's did not improve significantly (it actually degraded) for the test set throughout iterations.
+Errors on the training set, however, decreased exponentially as expected. Performance considerations, however,
+are fully addressed in subsection \ref{sec:results}.
+
+\begin{figure}[H]
+\begin{center}
+	\includegraphics[width=4in, trim=1in 2.5in 1in 2.7in]{ada-plot}\label{fig:ada-plot}
+\caption{Training and testing errors for a 10-fold adaboost classification of the Wisconsin dataset used 
+for Assignment 2}%      
+\end{center}
+\end{figure}
+%------------------------------------------ b - knn -----------------------------------------
+\subsection{KNN}\label{sec:knn}
+KNN was significantly simpler to implement. The difficulty lying more in establishing what it means to have training
+and testing on a method that does not really \emph{learn} the data. We chose to use the training set as 
+neighbours to both the training and testing instances, making sure to remove the point we sought to classify
+from the training set during training instances. We refer the reader to the driver script, lines 54 through 73.
+
+\texttt{knn.m} (omitted header)
+\lstinputlisting[breaklines, firstline=5, firstnumber=5]{knn.m}
+
+\begin{figure}[H]
+\begin{center}
+	\includegraphics[width=4in, trim=1in 2.5in 1in 2.7in]{knn-plot}\label{fig:knn-plot}
+\caption{Training and testing errors for a 10-fold KNN of the Wisconsin dataset used for Assignment 2}%      
+\end{center}
+\end{figure}
+%------------------------------------------ c - results -----------------------------------------
+\subsection{Results}\label{sec:results}
+Despite significant differences in performances for training data and errors against the probed
+hyper-parameters, both methods yielded comparable best rates for testing data.
+
+Moreover, a comparison between classifiers and simply using class priors as a means of classifying 
+from \texttt{A3\textunderscore q6\textunderscore driver.m} :
+\lstinputlisting[breaklines, firstline=99, firstnumber=99]{A3_q6_driver.m}
+yields the following output.
 \begin{verbatim}
-best prediction given on test data by adaboost:
-min(mean(errs_ada(:,:,2), 2))
-        2.313158e-01
-best prediction given on test data by knn:
-min(mean(errs_knn(:,:,2), 2))
-        2.578947e-01
-empirical ratio of class 1 to class 0:
-sum(y)/length(y)             
-        2.371134e-01
+	best prediction given on test data by adaboost:
+	min(mean(errs_ada(:,:,2), 2))
+	        2.313158e-01
+	best prediction given on test data by knn:
+	min(mean(errs_knn(:,:,2), 2))
+	        2.578947e-01
+	empirical ratio of class 1 to class 0:
+	sum(y)/length(y)             
+	        2.371134e-01
 \end{verbatim}
+
+I refer the reader to the analysis I performed on the same data for assignment 2, where the significant 
+class-overlap across most dimensions yielded classification slightly more effective than using empirical means.
+
+Curious to see the contribution of this particular dataset to such results, I downloaded another dataset with less
+class overlap from UCI:
+(https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/) which is included as an 
+attachment\footnote{the reader need only substitute lines }
+for which the performance of the classifiers is quite different. See figures \ref{fig:ada-pima} and \ref{fig:knn-pima}.
+
+\begin{figure}[H]
+\begin{center}
+	\subfloat[adaboost - pima dataset]{
+	\includegraphics[width=2.6in, trim=1in 2.5in 1in 2.7in]{ada-plot-pima}\label{fig:ada-pima}}
+	\hfill
+	\subfloat[knn - pima dataset]{
+	\includegraphics[width=2.6in, trim=1in 2.5in 1in 2.7in]{knn-plot-pima}\label{fig:knn-pima}}
+\caption{Adaboost and KNN behave quite differently with this dataset than they do with the wisconsin dataset.}%      
+\end{center}
+\end{figure}
+And the output of the script shows that Adaboost performs significantly better with this dataset however
+KNN performs significantly worse.
+\begin{verbatim}
+	Here's how well we did:
+	best prediction given on test data by adaboost:
+	        2.356118e-01
+	best prediction given on test data by knn:
+	        4.335441e-01
+	empirical ratio of class 1 to class 0:
+	        3.489583e-01
+\end{verbatim}
+This serves as a rather informal observation regarding the suitability of different methods for
+ different kinds of problems and different datasets. 
 \end{document}
