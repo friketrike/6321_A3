@@ -543,8 +543,15 @@ class-overlap across most dimensions yielded classification slightly more effect
 Curious to see the contribution of this particular dataset to such results, I downloaded another dataset with less
 class overlap from UCI:
 (https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/) which is included as an 
-attachment\footnote{the reader need only substitute lines }
-for which the performance of the classifiers is quite different. See figures \ref{fig:ada-pima} and \ref{fig:knn-pima}.
+attachment. For this dataset, the performance of the classifiers is quite different from what we observe in 
+the previous example. See figures \ref{fig:ada-pima} and \ref{fig:knn-pima}.
+
+We note that the reader need only substitute lines 5 and 6 from the driver script by:
+\begin{lstlisting}[numbers=none]
+	pima = load('pima-indians-diabetes.data');
+	X = pima(:,1:end-1);
+	y = pima(:,end);
+\end{lstlisting}
 
 \begin{figure}[H]
 \begin{center}
