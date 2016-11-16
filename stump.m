@@ -10,7 +10,8 @@ function [ Threshold, Dim, polarity, err ] = stump( X, y, W )
 %   features. y is a vector containing binary classifications and W are the
 %   weights associated with each observation in x (eg weights assigned by a
 %   boosting algorithm. The threshold is the point at which a decision
-%   boundary perpendicular to the selected dimension Dim should pass.
+%   boundary perpendicular to the selected dimension Dim should pass. 
+%   Polarity indicates negative values are to the left/down (+) or right/up(+)
     [m,d] = size(X);
     % Normalize W, in case it hasn't been done
     W = W/sum(W);

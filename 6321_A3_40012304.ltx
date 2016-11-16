@@ -71,7 +71,7 @@ Propose an adequate learning algorithm for each instance.
 \subsection{1000 samples, 6-dimensional continuous space, classify $\sim$100 examples.}
 This could be a candidate for knn, despite the dimensionality approaching higher orders. 
 We can still somewhat escape the curse of dimensionality, since for non-parametric 
-methods, in order to have an optimal error rate $e$ we require at least $n$ samples where 
+methods, in order to have an best-case error rate $e$ we require at least $n$ samples where 
 $n \sim \left( \frac{c}{e}\right)^{\frac{d+4}{4}}$, $c$ is the number of classes, and $d$
 is the number of dimenions\footnote{See the non-parametric methods pdf used in class.}. 
 Having 1000 samples in a 6-dimensional space would still allow for an error 
@@ -312,15 +312,21 @@ The eigenvalues of which are $\lambda_1 = -1, \lambda_2 = 1$, making $\bm{M}'$ a
 
 %------------------------  c ------------------------%
 \subsection{$k(\bm{x},\bm{z}) = k_1(\bm{x},\bm{z}) k_2(\bm{x},\bm{z})$}
-The kernel matrix $\bm{M}'$ of the product of two matrices $ k_1(\bm{x},\bm{z}), k_2(\bm{x},\bm{z})$ is equivalent to the element-wise multiplication of the respective two kernel matrices  $\bm{M}' = \bm{M}_1 \odot \bm{M}_2$. This is also known as the Hadamard product or the Schur product. The Schur product theorem states that said product of two positive semi-definite matrices is also positive semi-definite.
-It is trivial to show that symmetry is preserved under such conditions. Thus $k(\bm{x},\bm{z}) = k_1(\bm{x},\bm{z}) k_2(\bm{x},\bm{z})$ is a valid kernel.
+The kernel matrix $\bm{M}'$ of the product of two matrices 
+$ k_1(\bm{x},\bm{z}), k_2(\bm{x},\bm{z})$ is equivalent to the element-wise 
+multiplication of the respective two kernel matrices  
+$\bm{M}' = \bm{M}_1 \odot \bm{M}_2$. This is also known as the Hadamard 
+product or the Schur product. The Schur product theorem states that said 
+product of two positive semi-definite matrices is also positive semi-definite.
+It is very easy to show that symmetry is preserved for the Hadamard product of 
+two symmetric matrices. Thus $k(\bm{x},\bm{z}) = k_1(\bm{x},\bm{z}) k_2(\bm{x},\bm{z})$ is a valid kernel.
 
 %------------------------  d ------------------------%
 \subsection{$k(\bm{x},\bm{z}) = f(\bm{x})f(\bm{z}), where$ $f: \mathbb{R}^n \rightarrow \mathbb{R}$}\label{functions}
 Here we rely on the fact that a kernel can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$ where $\phi(\bm{x})$ maps
 $\bm{x}$ onto an n-dimensional space.
 
-It is trivial to see that if $n=1$ and $\phi = f$, $f(\bm{x})f(\bm{z})$ constitutes a valid kernel sinc it 
+If $n=1$ and $\phi = f$, $f(\bm{x})f(\bm{z})$ constitutes a valid kernel since it 
 can be expressed as $k(x,z) = \phi(\bm{x})^T\phi(\bm{z})$.
 
 %------------------------  e ------------------------%
@@ -330,9 +336,9 @@ valid kernel.
 
 %------------------------------------------ Q 4 ----------------------------------------------------
 \section{Nearest neighbour vs decision trees, do boundaries coincide?}
-Boundaries do not necessarily coincide for these two classification strategies; moreover, 
+Boundaries do not necessarily coincide for these two classification strategies. In fact, 
 in typical usage, they would tend to be non-coincidental but in some rare or contrived cases\footnote{Eg
-A dataset consisting of two points; the usage of decision functions of an arbitrary number of features, etc.}
+A dataset consisting of two points or the usage of decision functions of an arbitrary number of features, etc.}
 the boundaries might equate.
 
 Decision tree boundaries are typically composed of hyper-planes
@@ -384,31 +390,18 @@ The minimal multi-class classification error rate $P^*$ is given by:
 \[
 		P^* = 1-\int \arg\max\limits_i P(\omega_i|x)P(x)dx
 \]
-We use Bayes to obtain $P(x)$:
-\[ P(x)=P(x|\omega_i)P(\omega_i) =
+We note that $P(\omega_i|x)P(x) = P(x,\omega_i) = P(x|\omega_i)P(\omega_i)$, thus:
+\[ P(\omega_i|x)P(x) =
 	\begin{cases}
 	    \frac{1}{c} & \quad 0\leq x \leq \frac{cr}{c-1}\\
 	    \frac{1}{c} & \quad i \leq x \leq i + 1 - \frac{cr}{c-1}\\
 		         0 & \quad otherwise
 	\end{cases}
 \]
-We also use Bayes to obtain $P(\omega_i|x)$:
-\[ 
-	\begin{aligned}
-		P(\omega_i|x) =&\frac{P(x|\omega_i)P(x)}{P(\omega_i)} \\
-						  =&\frac{P(x|\omega_i)P(x|\omega_i)P(\omega_i)}{P(\omega_i)}\\
-						  =&P^{2}(x|\omega_i)\\
-	\end{aligned}
-\]
-\[
-	P(\omega_i|x)=
-	\begin{cases}
-	    1 & \quad 0\leq x \leq \frac{cr}{c-1}\\
-	    1 & \quad i \leq x \leq i + 1 - \frac{cr}{c-1}\\
-		         0 & \quad otherwise
-	\end{cases}
-\]
-Given the class density and probability, we can see that for any region with overlapping densities, the choice of any i will maximize. Additionally, we see that the constraints imposed by existing densities demand that $0 \leq r \leq \frac{c-1}{c}$. This in turn implies that densities overlap only in $[0, \frac{cr}{c-1}]$ thus:
+Given the class density and probability, we can see that for any region with overlapping 
+densities, the choice of any i will maximize. Additionally, we see that the constraints 
+imposed by existing densities demand that $0 \leq r \leq \frac{c-1}{c}$. This in turn 
+implies that densities overlap only in $[0, \frac{cr}{c-1}]$ thus:
 \[
 	\begin{aligned}
 		P^* =& 1-\int P(\omega_1|x)P(x)dx\\
@@ -422,7 +415,6 @@ Given the class density and probability, we can see that for any region with ove
 
 %------------------------  b ------------------------%
 \subsection{Show the nearest-neighbor rate $P = P^*$}
-
 \[
 	\begin{aligned}
 		LNN =& \int\left[ 1 - \sum_{i=1}^{c}P^2(\omega_i | x)\right]p(x)dx \\
@@ -447,8 +439,8 @@ Given the class density and probability, we can see that for any region with ove
 %------------------------------------------ Q 6 ----------------------------------------------------
 \section{Implementation}
 In the interest of comparing methods, I have chosen to do both adaboost and knn. Both implementations rely on
-a single driver script, (please see attached \texttt{A3\textunderscore q6\textunderscore driver.m}) which we
-include also at the end of this sub-section for the reader's convenience. In order to run the code 
+a single driver script, (please see attached file \texttt{A3\textunderscore q6\textunderscore driver.m}) 
+which is printed at the end of this sub-section for the reader's convenience. In order to run the code 
 created for this assignment, one must call \texttt{A3\textunderscore q6\textunderscore driver.m} 
 from within Matlab while including the function files that were created for each method in the working 
 directory or executable path. Adaboost relies on \texttt{ada\textunderscore boost.m},
@@ -456,29 +448,39 @@ directory or executable path. Adaboost relies on \texttt{ada\textunderscore boos
 The function files are included as attachments and shall be detailed and printed in sub-sections 
 \ref{sec:adaboost} and \ref{sec:knn} for the reader's convenience.
 
-The driver script deals with loading the data creating the partitions for the k-fold CV, instantiating maximum 
-number of iterations or maximum number of neighbors for each one of the methods and plotting results. 
-Each classifier, relies on function scripts written for the classifier. 
+The driver script deals with loading the data, creating the partitions for the k-fold CV, instantiating 
+the maximum number of iterations or maximum number of neighbors for each one of the methods and plotting 
+results. Each classifier, relies on function scripts written for the classifier. 
 
 \texttt{A3\textunderscore q6\textunderscore driver.m} (omitting header and final print instructions):
 \lstinputlisting[breaklines, firstline=5, lastline=75, firstnumber=5]{A3_q6_driver.m}
 
 %------------------------------------------ a - adaboost -----------------------------------------
 \subsection{Adaboost}\label{sec:adaboost}
-The implementation relies on a driver script ( common 
-to both adaboost and knn) and two function files \texttt{ada\textunderscore boost.m}, \texttt{stump.m} and 
+The implementation relies on the above-mentioned driver script (common to both adaboost and knn) and 
+three function files \texttt{ada\textunderscore boost.m}, \texttt{stump.m} and 
 \texttt{calculate\textunderscore error.m}.
 
-The driver calls \texttt{ada\textunderscore boost.m} for as many iterations as indicated, while retaining a copy of the 
-weak classifiers $h$, the classifier weights $\alpha$ and the observation weights $w$ after each iteration.
-Each time it runs, \texttt{ada\textunderscore boost.m} calls \texttt{stump.m} with the appropriate observation-weights 
-and the later returns a weak classifier $h$, for which \texttt{ada\textunderscore boost.m} calculates a weight $\alpha$.
-After each iteration i of training with the training set, the driver script uses the accrued $h_i$, 
-$\alpha_i$ pairs to call \texttt{calculate\textunderscore error.m} both with the training and testing data
-in order to store training and testing errors (see lines 46 to 50 in the driver script).
+The driver calls \texttt{ada\textunderscore boost.m} for as many iterations as indicated in line 13, 
+while retaining a copy of the weak classifiers $h$, the classifier weights $\alpha$ and the 
+observation weights $w$ after each iteration.
+Each time it runs, \texttt{ada\textunderscore boost.m} calls \texttt{stump.m} with the appropriate 
+observation-weights and the later returns a weak classifier $h_i$, for which 
+\texttt{ada\textunderscore boost.m} calculates a weight $\alpha_i$.
+After each iteration i of training with the training set, the driver script uses the accrued 
+$h_i, h_{i-1}, \ldots h_1$, 
+$\alpha_i, alpha_{i-1}, \ldots \alpha_{1}$ pairs to call \texttt{calculate\textunderscore error.m} 
+both with the training and testing data in order to store training and testing errors 
+(see lines 46 to 50 in the driver script).
 
-Note that most of the effort required to get adaboost working was put into, not so much \texttt{ada\textunderscore boost.m}
-but into \texttt{stump.m}, which
+Note that most of the effort required to get adaboost working was put into, not so much 
+\texttt{ada\textunderscore boost.m} but into \texttt{stump.m}, which returns checks along all
+dimensions, between any two points of differing classes in order to minimize the error of the 
+stump returned. In order to do so, the stump that yields the error farthest from $0.5$ is chosen
+and polarity is decided accordingly: polarity is positive if the error is less than $0.5$ and
+negative if the error is larger than $0.5$\footnote{That is to say, if we have an extremely 
+large error, the stump is very informative, we just have to take the opposite values for 
+classification.}.
 
 \texttt{ada\textunderscore boost.m} (omitted header)
 \lstinputlisting[breaklines, firstline=5, firstnumber=5]{ada_boost.m}
@@ -518,10 +520,11 @@ from the training set during training instances. We refer the reader to the driv
 \end{figure}
 %------------------------------------------ c - results -----------------------------------------
 \subsection{Results}\label{sec:results}
-Despite significant differences in performances for training data and errors against the probed
-hyper-parameters, both methods yielded comparable best rates for testing data.
+Despite significant differences in performances for training data, both methods yielded comparable 
+best rates for testing data.
 
-Moreover, a comparison between classifiers and simply using class priors as a means of classifying 
+Moreover, a comparison between both classifiers and the use of class priors as a means of 
+classification yielded interesting results.
 from \texttt{A3\textunderscore q6\textunderscore driver.m} :
 \lstinputlisting[breaklines, firstline=99, firstnumber=99]{A3_q6_driver.m}
 yields the following output.
@@ -537,16 +540,18 @@ yields the following output.
 	        2.371134e-01
 \end{verbatim}
 
-I refer the reader to the analysis I performed on the same data for assignment 2, where the significant 
-class-overlap across most dimensions yielded classification slightly more effective than using empirical means.
+I refer the reader to the analysis I performed on the same data for assignment 2, where the
+conclusion was that significant class-overlap across most dimensions yielded classification 
+only slightly more effective than using class priors.
 
-Curious to see the contribution of this particular dataset to such results, I downloaded another dataset with less
-class overlap from UCI:
+Curious to see the contribution of this particular dataset to classifier accuracy, 
+I downloaded another dataset with less class overlap from UCI:
 (https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/) which is included as an 
 attachment. For this dataset, the performance of the classifiers is quite different from what we observe in 
 the previous example. See figures \ref{fig:ada-pima} and \ref{fig:knn-pima}.
 
-We note that the reader need only substitute lines 5 and 6 from the driver script by:
+We note that in order to load this dataset, the reader need only substitute 
+lines 5 and 6 from the driver script with the following code:
 \begin{lstlisting}[numbers=none]
 	pima = load('pima-indians-diabetes.data');
 	X = pima(:,1:end-1);
@@ -560,7 +565,8 @@ We note that the reader need only substitute lines 5 and 6 from the driver scrip
 	\hfill
 	\subfloat[knn - pima dataset]{
 	\includegraphics[width=2.6in, trim=1in 2.5in 1in 2.7in]{knn-plot-pima}\label{fig:knn-pima}}
-\caption{Adaboost and KNN behave quite differently with this dataset than they do with the wisconsin dataset.}%      
+\caption{Adaboost and KNN behave quite differently with the UCI pima-indians-diabetes dataset 
+than they do with the wisconsin dataset.}%      
 \end{center}
 \end{figure}
 And the output of the script shows that Adaboost performs significantly better with this dataset however
@@ -574,6 +580,6 @@ KNN performs significantly worse.
 	empirical ratio of class 1 to class 0:
 	        3.489583e-01
 \end{verbatim}
-This serves as a rather informal observation regarding the suitability of different methods for
- different kinds of problems and different datasets. 
+This last comparison merely serves as an informal observation regarding the suitability of 
+different methods for different kinds of problems and different datasets. 
 \end{document}
