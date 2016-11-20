@@ -404,8 +404,8 @@ implies that densities overlap only in $[0, \frac{cr}{c-1}]$ thus:
 \[
 	\begin{aligned}
 		P^* =& 1-\int P(\omega_1|x)P(x)dx\\
-		         =& 1 - \frac{1}{c}\int_0^{\frac{cr}{c-1}}dx - \sum_{i=1}^{c}
-		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}dx \\ %
+		         =& 1 - \frac{1}{c}\int_0^{\frac{cr}{c-1}}1 dx - \sum_{i=1}^{c}
+		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}1 dx \\ %
 		        =& 1 - \frac{1}{c}\frac{cr}{c-1} - 1-\frac{cr}{c-1} \\ %  		
 		      =& \frac{cr - r}{c-1}\\ %  
 		      =& r
@@ -414,6 +414,16 @@ implies that densities overlap only in $[0, \frac{cr}{c-1}]$ thus:
 
 %------------------------  b ------------------------%
 \subsection{Show the nearest-neighbor rate $P = P^*$}
+From the piece-wise densities and the class prior, we can derive:
+
+\[ P(\omega_i|x) =
+	\begin{cases}
+	    \frac{1}{c} & \quad 0\leq x \leq \frac{cr}{c-1}\\
+	    1 & \quad i \leq x \leq i + 1 - \frac{cr}{c-1}\\
+		         0 & \quad otherwise
+	\end{cases}
+\]
+
 \[
 	\begin{aligned}
 		LNN =& \int\left[ 1 - \sum_{i=1}^{c}P^2(\omega_i | x)\right]p(x)dx \\
@@ -423,17 +433,17 @@ implies that densities overlap only in $[0, \frac{cr}{c-1}]$ thus:
 		       =& \int p(x) - \sum_{i=1}^{c}
 		       		\frac{P(x | \omega_i )^2P(\omega_i)^2}{p(x)}dx \\ %
 		      =& \int p(x) - \sum_{i=1}^{c}
-		       		\frac{P(x | \omega_i )P(\omega_i)(P(x | \omega_i )P(\omega_i))}{p(x)}dx \\ %   
+		       		\frac{P(x | \omega_i )P(\omega_i)(P(\omega_i | x)p(x))}{p(x)}dx \\ %   
 		      =& \int p(x) - \sum_{i=1}^{c}
-		       		\frac{P(x | \omega_i )P(\omega_i)p(x)}{p(x)}dx \\ % 		       		
-		      =& \int p(x)dx - \frac{1}{c}\int_0^{\frac{cr}{c-1}}dx - \sum_{i=1}^{c}
-		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}dx \\ %   
+		       		{P(x | \omega_i )P(\omega_i)p(\omega_i|x)}dx \\ % 		       		
+                    =& 1 - \frac{1}{c}\sum_{i=1}^{c}\int_0^{\frac{cr}{c-1}}\frac{1}{c}dx - \sum_{i=1}^{c}
+		       		\frac{1}{c}\int_i^{i+1-\frac{cr}{c-1}}1dx \\ %   
 		      =& 1 - \frac{1}{c}\frac{cr}{c-1} - 1-\frac{cr}{c-1} \\ %  		
 		      =& \frac{cr - r}{c-1}\\ %  
 		      =& r
 	\end{aligned}
 \]
-
+\clearpage
 
 %------------------------------------------ Q 6 ----------------------------------------------------
 \section{Implementation}
