@@ -414,9 +414,9 @@ implies that densities overlap only in $[0, \frac{cr}{c-1}]$ thus:
 
 %------------------------  b ------------------------%
 \subsection{Show the nearest-neighbor rate $P = P^*$}
-From the piece-wise densities and the class prior, we can derive:
+From the piece-wise densities, the class prior and the fact that that $p(x) = \sum_{i=1}^c P(x|\omega_i)P(\omega_i)$, we can derive\footnote{By defining $\frac{0}{0} = 0$ in this case}:
 
-\[ P(\omega_i|x) =
+\[ P(\omega_i|x) = \frac{P(x|\omega_i)P(\omega_i)}{p(x)} =
 	\begin{cases}
 	    \frac{1}{c} & \quad 0\leq x \leq \frac{cr}{c-1}\\
 	    1 & \quad i \leq x \leq i + 1 - \frac{cr}{c-1}\\
