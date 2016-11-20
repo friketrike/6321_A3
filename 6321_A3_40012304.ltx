@@ -387,7 +387,7 @@ and
 The minimal multi-class classification error rate $P^*$ is given by:
 
 \[
-		P^* = 1-\int \arg\max\limits_i P(\omega_i|x)P(x)dx
+		P^* = 1-\int \max\limits_i P(\omega_i|x)P(x)dx
 \]
 We note that $P(\omega_i|x)P(x) = P(x,\omega_i) = P(x|\omega_i)P(\omega_i)$, thus:
 \[ P(\omega_i|x)P(x) =
@@ -423,7 +423,7 @@ From the piece-wise densities and the class prior, we can derive:
 		         0 & \quad otherwise
 	\end{cases}
 \]
-
+Thus:
 \[
 	\begin{aligned}
 		LNN =& \int\left[ 1 - \sum_{i=1}^{c}P^2(\omega_i | x)\right]p(x)dx \\
